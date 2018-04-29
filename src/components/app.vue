@@ -49,7 +49,7 @@
 
   hd.load().then(() => {
     appData.feeds = hd.feeds;
-    console.log(appData.feeds);
+    appData.lastUpdated = hd.lastUpdated;
   }).catch(console.error);
 
   export default {
