@@ -1,10 +1,12 @@
 <template>
   <div id="app">
     <div class="title">{{title}}</div>
+    <!--
     <button class="icon-btn settings">
       <font-awesome-icon :icon="icon" />
     </button>
-    <!-- <div class="settings"></div> -->
+    <div class="settings"></div>
+    -->
     <div class="feeds">
       <div class="feed" v-for="feed in feeds">
         <div class="title">{{feed.title}} <span class="count">({{feed.items.length}})</span></div>
