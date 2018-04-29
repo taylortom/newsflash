@@ -36,7 +36,7 @@ class FeedData {
         }
         helpers.transformData(data);
         // modify data to return data.feed with the items attached directly
-        resolve(Object.assign({}, data.feed, { items: data.items }));
+        resolve(Object.assign({}, data.feed, { items: data.items.filter(helpers.filterOldHeadlines) }));
       });
     });
   }

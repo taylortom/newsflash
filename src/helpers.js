@@ -1,8 +1,10 @@
+import config from './models/config';
+
 function transformData(data) {
   var today = getToday();
   var yesterday = getYesterday();
 
-  for(var i = 0, count = data.items.length; i < count; i++) {    
+  for(var i = 0, count = data.items.length; i < count; i++) {
     data.items[i].feed = data.feed.title;
 
     var d = new Date(data.items[i].pubDate);
@@ -28,6 +30,11 @@ function organiseHeadlines(headlines) {
   .filter(filterByToday)
   .sort(sortByDate)
   .slice(0, config.headlineCount);
+}
+function filterOldHeadlines(headline) {
+  const pubDate = new Date(headline.pubDate);
+  const minAge = new Date(new Date().getTime()-config.get('maxArticleAge'));
+  return pubDate > minAge;
 }
 
 function filterByToday(headline) {
@@ -60,6 +67,7 @@ export default {
   transformData,
   formatDate,
   organiseHeadlines,
+  filterOldHeadlines,
   filterByToday,
   sortByDate,
   getToday,
