@@ -99,7 +99,7 @@
         font-size: 18px;
       }
       .headlines {
-        padding: 15px 30px;
+        padding: 20px;
         border-top: 1px solid #b0c0c7;
         border-bottom: 1px solid #b0c0c7;
         background: white;
