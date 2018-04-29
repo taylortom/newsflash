@@ -15,7 +15,7 @@
             <!-- <div class="thumb">
             <img :src="headline.thumbnail" alt="">
           </div> -->
-          <div class="title"><a :href="headline.link" target="_blank"><!--{{index+1}}. -->{{headline.title}}</a></div>
+          <div class="title"><a :href="headline.link" target="_blank">{{headline.title}}</a></div>
           <div class="blurb" v-html="headline.description"></div>
           <div class="info">
             <span class="feed">{{headline.feed}}</span>
