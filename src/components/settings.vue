@@ -1,8 +1,10 @@
 <template>
-  <div class="settings">
+  <div class="settings" v-bind:class="{ hidden: isHidden }" v-on:click="isHidden = !isHidden">
     <button class="icon-btn settings">
       <font-awesome-icon :icon="icon" />
     </button>
+    <div class="panel">
+    </div>
   </div>
 </template>
 
@@ -11,6 +13,11 @@ import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
 import faCog from '@fortawesome/fontawesome-free-solid/faCog'
 
 export default {
+  data: function() {
+    return {
+      isHidden: true
+    }
+  },
   props: {
     data: {
       type: Object,
@@ -27,18 +34,30 @@ export default {
 </script>
 
 <style lang="less">
-  button.icon-btn {
-    background: none;
-    border: none;
-    padding: 10px;
-    font-size: 16px;
-    outline: none;
-    cursor: pointer;
+  .settings {
+    &.hidden .panel {
+      display: none;
+    }
+    .panel {
+      padding: 20px;
+      background: #b0c0c7;
+      color: white;
+    }
 
-    &.settings {
-      position: absolute;
-      right: 0;
-      top: 70px;
+    button.icon-btn {
+      background: none;
+      color: black;
+      border: none;
+      padding: 10px;
+      font-size: 16px;
+      outline: none;
+      cursor: pointer;
+
+      &.settings {
+        position: absolute;
+        right: 0;
+        top: 70px;
+      }
     }
   }
 </style>

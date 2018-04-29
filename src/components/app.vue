@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div class="title">{{title}}</div>
-    <!-- <Settings :data="this"/> -->
+    <Settings :data="this"/>
     <div class="feed">
       <div class="title">Latest headlines</div>
       <div class="latest headlines" v-if="latestHeadlines && latestHeadlines.length">
