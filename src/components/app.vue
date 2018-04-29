@@ -167,7 +167,6 @@
     }
   }
 
-
   .footer {
     font-size: 85%;
     text-align: right;
