@@ -25,7 +25,8 @@
   import Settings from './settings.vue';
 
   // create and load data
-  (new FeedData()).load().catch(console.error);
+  var fd = new FeedData();
+  fd.load().catch(console.error);
 
   export default {
     data: () => {
