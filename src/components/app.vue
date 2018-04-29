@@ -62,23 +62,25 @@
     }
   }
 
-  .feeds {
-    .feed {
-      > .title {
-        padding: 10px;
-        padding-left: 35px;
-        background: #b0c0c7;
-        color: white;
-        font-size: 18px;
-      }
-      .headlines {
-        padding: 20px;
-        border-top: 1px solid #b0c0c7;
-        border-bottom: 1px solid #b0c0c7;
-        background: white;
-        min-height: 100px;
-      }
+  .feed {
+    > .title {
+      padding: 10px;
+      padding-left: 35px;
+      background: #b0c0c7;
+      color: white;
+      font-size: 18px;
     }
+    .headlines {
+      padding: 20px;
+      border-top: 1px solid #b0c0c7;
+      border-bottom: 1px solid #b0c0c7;
+      background: white;
+      min-height: 100px;
+    }
+  }
+
+  .latest.headlines {
+    background: none;
   }
 
   .footer {
