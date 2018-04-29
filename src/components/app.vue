@@ -1,12 +1,7 @@
 <template>
   <div id="app">
     <div class="title">{{title}}</div>
-    <!--
-    <button class="icon-btn settings">
-      <font-awesome-icon :icon="icon" />
-    </button>
-    <div class="settings"></div>
-    -->
+    <!-- <Settings :data="this"/> -->
     <div class="latest headlines" v-if="latestItems && latestItems.length">
       <Headline v-for="(headline, index) in latestItems" :key="index" :headline="headline"/>
     </div>
@@ -25,9 +20,7 @@
 <script>
   import FeedData from '../models/feeddata';
   import Headline from './headline.vue';
-  // icon stuff
-  import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
-  import faCog from '@fortawesome/fontawesome-free-solid/faCog'
+  import Settings from './settings.vue';
 
   const hd = new FeedData();
   const appData = {
@@ -44,12 +37,9 @@
 
   export default {
     data: () => { return appData; },
-    computed: {
-      icon: () => { return faCog; }
-    },
     components: {
-      FontAwesomeIcon,
-      Headline
+      Headline,
+      Settings
     }
   }
 </script>
@@ -71,21 +61,6 @@
       font-size: 40px;
       font-weight: bold;
       padding: 30px;
-    }
-
-    button.icon-btn {
-      background: none;
-      border: none;
-      padding: 10px;
-      font-size: 16px;
-      outline: none;
-      cursor: pointer;
-
-      &.settings {
-        position: absolute;
-        right: 0;
-        top: 70px;
-      }
     }
   }
 
