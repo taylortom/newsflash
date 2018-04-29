@@ -24,24 +24,15 @@
   import Headline from './headline.vue';
   import Settings from './settings.vue';
 
-  const fd = new FeedData();
-  const appData = {
-    title: config.get('appName'),
-    latestHeadlines: [],
-    feeds: [],
-    filters: [],
-    lastUpdated: ""
-  };
-
-  fd.load().then(() => {
-    // appData.feeds = hd.feeds;
-    // appData.latestHeadlines = hd.latestHeadlines;
-    // appData.lastUpdated = hd.lastUpdated;
-  }).catch(console.error);
+  // create and load data
+  (new FeedData()).load().catch(console.error);
 
   export default {
     data: () => {
-      return Object.assign(fd, appData);
+      return Object.assign(fd, {
+        title: config.get('appName'),
+        filters: [],
+      });
     },
     components: {
       Headline,
