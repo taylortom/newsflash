@@ -7,26 +7,15 @@
     </button>
     <div class="settings"></div>
     -->
+    <div class="latest headlines" v-if="latestItems && latestItems.length">
+      <Headline v-for="(headline, index) in latestItems" :key="index" :headline="headline"/>
+    </div>
     <div class="feeds">
-      <div class="feed" v-for="feed in feeds">
+      <div class="feed" v-for="feed in feeds" v-if="feed.items.length">
         <div class="title">{{feed.title}} <span class="count">({{feed.items.length}})</span></div>
         <div class="headlines">
-          <div class="headline" v-for="(headline, index) in feed.items">
-            <!-- <div class="thumb">
-            <img :src="headline.thumbnail" alt="">
-          </div> -->
-          <div class="title"><a :href="headline.link" target="_blank">{{headline.title}}</a></div>
-          <div class="blurb" v-html="headline.description"></div>
-          <div class="info">
-            <span class="feed">{{headline.feed}}</span>
-            <span class="time">
-              <span v-if="headline.isToday">today at {{headline.pubTime}}</span>
-              <span v-else-if="headline.isYesterday">yesterday at {{headline.pubTime}}</span>
-              <span v-else>{{headline.pubDate}}</span>
-            </span>
-          </div>
+          <Headline v-for="(headline, index) in feed.items" :key="index" :headline="headline"/>
         </div>
-      </div>
       </div>
     </div>
     <div class="footer">Last {{title}}: {{lastUpdated}}</div>
@@ -35,6 +24,7 @@
 
 <script>
   import FeedData from '../models/feeddata';
+  import Headline from './headline.vue';
   // icon stuff
   import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
   import faCog from '@fortawesome/fontawesome-free-solid/faCog'
@@ -58,7 +48,8 @@
       icon: () => { return faCog; }
     },
     components: {
-      FontAwesomeIcon
+      FontAwesomeIcon,
+      Headline
     }
   }
 </script>
@@ -113,56 +104,6 @@
         border-bottom: 1px solid #b0c0c7;
         background: white;
         min-height: 100px;
-
-        .headline {
-          padding: 20px 0;
-          width: 350px;
-          display: inline-block;
-          margin: 0 10px;
-
-          .thumb {
-            display: inline-block;
-            width: 100px;
-            height: 100px;
-            overflow: hidden;
-            border-radius: 5px;
-
-            .thumb img { height: 100%; }
-          }
-
-          .title {
-            font-weight: bold;
-
-            a {
-              color: inherit;
-              text-decoration: none;
-
-              &:hover {
-                text-decoration: underline;
-              }
-            }
-          }
-
-          .blurb {
-            font-size: 85%;
-            height: 0;
-            overflow: hidden;
-          }
-
-          .info {
-            margin-top: 5px;
-            font-size: 85%;
-          }
-
-          .feed {
-            opacity: 0.7;
-            font-weight: bold;
-          }
-
-          .time {
-            opacity: 0.5;
-          }
-        }
       }
     }
   }
