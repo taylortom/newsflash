@@ -19,6 +19,7 @@ class FeedData {
       Promise.all(config.get('feeds').map(feed => this.fetchFeed(feed)))
         .then(data => {
           this.feeds = data;
+          this.lastUpdated = new Date().toTimeString().slice(0,5);
           resolve();
         })
         .catch(reject);
@@ -26,8 +27,6 @@ class FeedData {
   }
 
   fetchFeed(url, done) {
-    this.lastUpdated = new Date().toTimeString().slice(0,5);
-
     return new Promise(function(resolve, reject) {
       $.get(FEED_PREFIX + encodeURIComponent(url), function success(data) {
         if(data.status === 'error') {

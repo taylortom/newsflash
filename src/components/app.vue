@@ -18,25 +18,31 @@
 </template>
 
 <script>
+  import config from '../models/config';
   import FeedData from '../models/feeddata';
+
   import Headline from './headline.vue';
   import Settings from './settings.vue';
 
-  const hd = new FeedData();
+  const fd = new FeedData();
   const appData = {
-    title: "Newsflash",
+    title: config.get('appName'),
+    latestHeadlines: [],
     feeds: [],
     filters: [],
     lastUpdated: ""
   };
 
-  hd.load().then(() => {
-    appData.feeds = hd.feeds;
-    appData.lastUpdated = hd.lastUpdated;
+  fd.load().then(() => {
+    // appData.feeds = hd.feeds;
+    // appData.latestHeadlines = hd.latestHeadlines;
+    // appData.lastUpdated = hd.lastUpdated;
   }).catch(console.error);
 
   export default {
-    data: () => { return appData; },
+    data: () => {
+      return Object.assign(fd, appData);
+    },
     components: {
       Headline,
       Settings
