@@ -2,8 +2,11 @@
   <div id="app">
     <div class="title">{{title}}</div>
     <!-- <Settings :data="this"/> -->
-    <div class="latest headlines" v-if="latestItems && latestItems.length">
-      <Headline v-for="(headline, index) in latestItems" :key="index" :headline="headline"/>
+    <div class="feed">
+      <div class="title">Latest headlines</div>
+      <div class="latest headlines" v-if="latestHeadlines && latestHeadlines.length">
+        <Headline v-for="(headline, index) in latestHeadlines" :key="index" :index="index+1" v-bind:showIndex="true" :headline="headline"/>
+      </div>
     </div>
     <div class="feeds">
       <div class="feed" v-for="feed in feeds" v-if="feed.items.length">
