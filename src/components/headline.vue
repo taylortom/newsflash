@@ -3,7 +3,7 @@
     <!-- <div class="thumb">
       <img :src="headline.thumbnail" alt="">
     </div> -->
-    <div class="title"><a :href="headline.link" target="_blank">{{headline.title}}</a></div>
+    <div class="title"><a :href="headline.link" target="_blank"><span v-if="showIndex">{{index}}. </span>{{headline.title}}</a></div>
     <div class="blurb" v-html="headline.description"></div>
     <div class="info">
       <span class="feed">{{headline.feed}}</span>
@@ -22,6 +22,15 @@ export default {
     headline: {
       type: Object,
       required: true
+    },
+    index: {
+      type: Number,
+      required: false
+    },
+    showIndex: {
+      type: Boolean,
+      required: false,
+      default: false
     }
   }
 }
