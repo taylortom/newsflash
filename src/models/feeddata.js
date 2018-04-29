@@ -8,6 +8,7 @@ let fetched = 0;
 class FeedData {
   constructor() {
     this.feeds = [];
+    this.latestHeadlines = [];
   }
 
   load() {
@@ -19,6 +20,7 @@ class FeedData {
       Promise.all(config.get('feeds').map(feed => this.fetchFeed(feed)))
         .then(data => {
           this.feeds = data;
+          this.latestHeadlines = helpers.getLatestHeadlines(data);
           this.lastUpdated = new Date().toTimeString().slice(0,5);
           resolve();
         })

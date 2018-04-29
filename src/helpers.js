@@ -27,10 +27,23 @@ function formatDate(date) {
 
 function organiseHeadlines(headlines) {
   return headlines
-  .filter(filterByToday)
-  .sort(sortByDate)
-  .slice(0, config.headlineCount);
+    .filter(filterByToday)
+    .sort(sortByDate)
+    .slice(0, config.headlineCount);
 }
+
+function getLatestHeadlines(headlines) {
+  return headlines
+    .reduce(combineFeeds, [])
+    .sort(sortByDate)
+    .slice(0, config.get('latestHeadlineCount'));
+}
+
+function combineFeeds(acc, feed) {
+  if(!acc) acc = [];
+  return acc.concat(feed.items);
+}
+
 function filterOldHeadlines(headline) {
   const pubDate = new Date(headline.pubDate);
   const minAge = new Date(new Date().getTime()-config.get('maxArticleAge'));
@@ -65,11 +78,6 @@ function getYesterday() {
 
 export default {
   transformData,
-  formatDate,
-  organiseHeadlines,
-  filterOldHeadlines,
-  filterByToday,
-  sortByDate,
-  getToday,
-  getYesterday
+  getLatestHeadlines,
+  filterOldHeadlines
 };
