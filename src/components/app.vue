@@ -52,6 +52,8 @@
   html {
     font-family: 'Merriweather', serif;
     font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     height: 100vh;
     background: #e8f1f5;
   }
