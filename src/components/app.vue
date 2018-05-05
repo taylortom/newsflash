@@ -1,6 +1,9 @@
 <template>
   <div id="app">
-    <div class="title">{{title}}</div>
+    <div class="title">
+      {{title}}
+      <div class="lastUpdated">Last {{title}}: {{lastUpdated}}</div>
+    </div>
     <Settings :data="this"/>
     <div class="feed">
       <div class="title">Latest headlines</div>
@@ -16,7 +19,6 @@
         </div>
       </div>
     </div>
-    <div class="footer">Last {{title}}: {{lastUpdated}}</div>
   </div>
 </template>
 
@@ -64,6 +66,11 @@
       font-size: 40px;
       font-weight: bold;
       padding: 30px;
+      .lastUpdated {
+        font-size: initial;
+        font-weight: normal;
+        color: #91a4ad;
+      }
     }
   }
 
@@ -86,12 +93,5 @@
 
   .latest.headlines {
     background: none;
-  }
-
-  .footer {
-    font-size: 85%;
-    text-align: right;
-    margin: 10px;
-    color: #91a4ad;
   }
 </style>
