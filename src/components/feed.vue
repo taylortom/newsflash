@@ -1,5 +1,5 @@
 <template>
-  <div class="feed" v-bind:class="classname">
+  <div class="feed" v-bind:class="classname" :data-id="id">
     <div class="title">{{title}}</div>
     <div class="headlines">
       <Headline v-for="(headline, index) in headlines" :headline="headline" :key="index" :index="index+1" v-bind:showIndex="showIndex"/>
@@ -12,6 +12,10 @@
 
   export default {
     props: {
+      id: {
+        type: String,
+        required: true
+      },
       title: {
         type: String,
         required: true

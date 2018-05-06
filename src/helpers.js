@@ -4,6 +4,8 @@ function transformData(data) {
   var today = getToday();
   var yesterday = getYesterday();
 
+  data.feed.id = idify(data.feed.title);
+
   for(var i = 0, count = data.items.length; i < count; i++) {
     data.items[i].feed = data.feed.title;
 
@@ -13,6 +15,10 @@ function transformData(data) {
 
     data.items[i].pubTime = d.toTimeString().slice(0,5);
   }
+}
+
+function idify(title) {
+  return title.replace(/-|:|'|-|–|—|\./g,'').replace(/\s/g, '').toLowerCase();
 }
 
 function formatDate(date) {

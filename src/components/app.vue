@@ -7,9 +7,9 @@
         <div class="lastUpdated" v-if="lastUpdated">Last {{title}}: {{lastUpdated}}</div>
       </div>
       <Loading v-if="!latestHeadlines.length && !feeds.length" />
-      <Feed v-if="latestHeadlines.length" :title="'Latest headlines'" :headlines="latestHeadlines" :classname="'latest'" :showIndex="true"/>
+      <Feed v-if="latestHeadlines.length" :id="latest" :title="'Latest headlines'" :headlines="latestHeadlines" :classname="'latest'" :showIndex="true"/>
       <div class="feeds" v-if="feeds.length" v-for="feed in feeds">
-        <Feed :title="feed.title" :headlines="feed.items" v-if="feed.items.length"/>
+        <Feed :id="feed.id" :title="feed.title" :headlines="feed.items" v-if="feed.items.length"/>
       </div>
     </div>
   </div>
