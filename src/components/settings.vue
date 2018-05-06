@@ -13,30 +13,30 @@
 </template>
 
 <script>
-import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
-import faCog from '@fortawesome/fontawesome-free-solid/faCog'
-import faTimes from '@fortawesome/fontawesome-free-solid/faTimes'
+  import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
+  import faCog from '@fortawesome/fontawesome-free-solid/faCog'
+  import faTimes from '@fortawesome/fontawesome-free-solid/faTimes'
 
-export default {
-  data: function() {
-    return {
-      isHidden: true
+  export default {
+    data: function() {
+      return {
+        isHidden: true
+      }
+    },
+    props: {
+      data: {
+        type: Object,
+        required: true
+      }
+    },
+    computed: {
+      openIcon: () => { return faCog; },
+      closeIcon: () => { return faTimes; }
+    },
+    components: {
+      FontAwesomeIcon
     }
-  },
-  props: {
-    data: {
-      type: Object,
-      required: true
-    }
-  },
-  computed: {
-    openIcon: () => { return faCog; },
-    closeIcon: () => { return faTimes; }
-  },
-  components: {
-    FontAwesomeIcon
   }
-}
 </script>
 
 <style lang="less">

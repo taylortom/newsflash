@@ -5,9 +5,9 @@
 </template>
 
 <style lang="less">
-.loading {
-  width: 100vw;
-  margin: 5% 0;
-  text-align: center;
-}
+  .loading {
+    width: 100vw;
+    margin: 5% 0;
+    text-align: center;
+  }
 </style>

@@ -19,23 +19,23 @@
 </template>
 
 <script>
-export default {
-  props: {
-    headline: {
-      type: Object,
-      required: true
-    },
-    index: {
-      type: Number,
-      required: false
-    },
-    showIndex: {
-      type: Boolean,
-      required: false,
-      default: false
+  export default {
+    props: {
+      headline: {
+        type: Object,
+        required: true
+      },
+      index: {
+        type: Number,
+        required: false
+      },
+      showIndex: {
+        type: Boolean,
+        required: false,
+        default: false
+      }
     }
   }
-}
 </script>
 
 <style lang="less">
