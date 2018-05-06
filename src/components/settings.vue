@@ -7,7 +7,9 @@
       <button class="icon-btn close" v-on:click="isHidden = !isHidden">
         <font-awesome-icon :icon="closeIcon" />
       </button>
-      <div class="inner"></div>
+      <div class="inner">
+        <Feeds :feeds="data.feeds" />
+      </div>
   </div>
   </div>
 </template>
@@ -16,6 +18,7 @@
   import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
   import faCog from '@fortawesome/fontawesome-free-solid/faCog'
   import faTimes from '@fortawesome/fontawesome-free-solid/faTimes'
+  import Feeds from './settings-feeds.vue'
 
   export default {
     data: function() {
@@ -34,7 +37,8 @@
       closeIcon: () => { return faTimes; }
     },
     components: {
-      FontAwesomeIcon
+      FontAwesomeIcon,
+      Feeds
     }
   }
 </script>
@@ -62,6 +66,8 @@
   .settings {
     float: left;
     height: 100vh;
+    color: #59686f;
+    overflow: hidden;
     &.hidden {
       margin-right: 0;
       button.open {
@@ -76,11 +82,11 @@
     .panel {
       height: 100%;
       width: 300px;
+      overflow: auto;
       background: #b0c0c7;
       transition: width 0.3s;
-
       .inner {
-        padding: 20px;
+        padding: 40px 0;
       }
     }
   }

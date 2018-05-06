@@ -8,8 +8,8 @@
       </div>
       <Loading v-if="!latestHeadlines.length && !feeds.length" />
       <Feed v-if="latestHeadlines.length" :id="latest" :title="'Latest headlines'" :headlines="latestHeadlines" :classname="'latest'" :showIndex="true"/>
-      <div class="feeds" v-if="feeds.length" v-for="feed in feeds">
-        <Feed :id="feed.id" :title="feed.title" :headlines="feed.items" v-if="feed.items.length"/>
+      <div class="feeds" v-if="feeds.length">
+        <Feed v-for="feed in feeds" :key="feed.id" :id="feed.id" :title="feed.title" :headlines="feed.items" v-if="feed.items.length"/>
       </div>
     </div>
   </div>
