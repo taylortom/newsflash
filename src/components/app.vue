@@ -5,7 +5,8 @@
       <div class="lastUpdated">Last {{title}}: {{lastUpdated}}</div>
     </div>
     <Settings :data="this"/>
-    <div class="feed" v-if="latestHeadlines && latestHeadlines.length">
+    <Loading v-if="!latestHeadlines.length && !feeds.length" />
+    <div class="feed" v-if="latestHeadlines.length">
       <div class="title">Latest headlines</div>
       <div class="latest headlines">
         <Headline v-for="(headline, index) in latestHeadlines" :key="index" :index="index+1" v-bind:showIndex="true" :headline="headline"/>
@@ -27,6 +28,7 @@
   import FeedData from '../models/feeddata';
 
   import Headline from './headline.vue';
+  import Loading from './loading.vue';
   import Settings from './settings.vue';
 
   // create and load data
@@ -41,6 +43,7 @@
       });
     },
     components: {
+      Loading,
       Headline,
       Settings
     }
