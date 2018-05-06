@@ -5,9 +5,9 @@
       <div class="lastUpdated">Last {{title}}: {{lastUpdated}}</div>
     </div>
     <Settings :data="this"/>
-    <div class="feed">
+    <div class="feed" v-if="latestHeadlines && latestHeadlines.length">
       <div class="title">Latest headlines</div>
-      <div class="latest headlines" v-if="latestHeadlines && latestHeadlines.length">
+      <div class="latest headlines">
         <Headline v-for="(headline, index) in latestHeadlines" :key="index" :index="index+1" v-bind:showIndex="true" :headline="headline"/>
       </div>
     </div>
