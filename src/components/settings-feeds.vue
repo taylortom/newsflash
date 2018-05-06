@@ -34,10 +34,7 @@
       onFeedClick: function(event) {
         event.preventDefault();
         var id = $(event.currentTarget).attr('data-id');
-        $('#app > .inner').scrollTo($(`.feeds .feed[data-id='${id}']`), {
-          duration: 400,
-          easing: 'swing'
-        });
+        $('#app > .inner').scrollTo($(`.feeds .feed[data-id='${id}']`), 400);
       }
     }
   }
