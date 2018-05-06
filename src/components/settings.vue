@@ -1,16 +1,21 @@
 <template>
-  <div class="settings" v-bind:class="{ hidden: isHidden }" v-on:click="isHidden = !isHidden">
-    <button class="icon-btn settings">
-      <font-awesome-icon :icon="icon" />
+  <div class="settings" v-bind:class="{ hidden: isHidden }">
+    <button class="icon-btn open" v-on:click="isHidden = !isHidden">
+      <font-awesome-icon :icon="openIcon" />
     </button>
     <div class="panel">
-    </div>
+      <button class="icon-btn close" v-on:click="isHidden = !isHidden">
+        <font-awesome-icon :icon="closeIcon" />
+      </button>
+      <div class="inner"></div>
+  </div>
   </div>
 </template>
 
 <script>
 import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
 import faCog from '@fortawesome/fontawesome-free-solid/faCog'
+import faTimes from '@fortawesome/fontawesome-free-solid/faTimes'
 
 export default {
   data: function() {
@@ -25,7 +30,8 @@ export default {
     }
   },
   computed: {
-    icon: () => { return faCog; }
+    openIcon: () => { return faCog; },
+    closeIcon: () => { return faTimes; }
   },
   components: {
     FontAwesomeIcon
@@ -34,29 +40,47 @@ export default {
 </script>
 
 <style lang="less">
+  button.icon-btn {
+    background: none;
+    color: #657075;
+    border: none;
+    padding: 10px;
+    font-size: 16px;
+    outline: none;
+    cursor: pointer;
+
+    &.open {
+      position: absolute;
+      opacity: 0;
+      transition-property: none;
+    }
+    &.close {
+      float: right;
+    }
+  }
+
   .settings {
-    &.hidden .panel {
-      display: none;
+    float: left;
+    height: 100vh;
+    &.hidden {
+      margin-right: 0;
+      button.open {
+        opacity: 1;
+        transition-property: opacity;
+        transition-delay: 0.25s;
+      }
+      .panel {
+        width: 0;
+      }
     }
     .panel {
-      padding: 20px;
+      height: 100%;
+      width: 300px;
       background: #b0c0c7;
-      color: white;
-    }
+      transition: width 0.3s;
 
-    button.icon-btn {
-      background: none;
-      color: black;
-      border: none;
-      padding: 10px;
-      font-size: 16px;
-      outline: none;
-      cursor: pointer;
-
-      &.settings {
-        position: absolute;
-        right: 0;
-        top: 70px;
+      .inner {
+        padding: 20px;
       }
     }
   }
