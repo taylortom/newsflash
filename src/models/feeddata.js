@@ -9,6 +9,7 @@ class FeedData {
   constructor() {
     this.feeds = [];
     this.latestHeadlines = [];
+    this.lastUpdated = '';
   }
 
   load() {

@@ -39,7 +39,7 @@
     data: () => {
       return Object.assign(fd, {
         title: config.get('appName'),
-        filters: [],
+        filters: []
       });
     },
     components: {
