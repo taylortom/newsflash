@@ -6,19 +6,9 @@
     </div>
     <Settings :data="this" v-if="latestHeadlines.length && feeds.length"/>
     <Loading v-if="!latestHeadlines.length && !feeds.length" />
-    <div class="feed" v-if="latestHeadlines.length">
-      <div class="title">Latest headlines</div>
-      <div class="latest headlines">
-        <Headline v-for="(headline, index) in latestHeadlines" :key="index" :index="index+1" v-bind:showIndex="true" :headline="headline"/>
-      </div>
-    </div>
-    <div class="feeds" v-if="feeds.length">
-      <div class="feed" v-for="feed in feeds" v-if="feed.items.length">
-        <div class="title">{{feed.title}} <span class="count">({{feed.items.length}})</span></div>
-        <div class="headlines">
-          <Headline v-for="(headline, index) in feed.items" :key="index" :headline="headline"/>
-        </div>
-      </div>
+    <Feed v-if="latestHeadlines.length" :title="'Latest headlines'" :headlines="latestHeadlines" :classname="'latest'" :showIndex="true"/>
+    <div class="feeds" v-if="feeds.length" v-for="feed in feeds">
+      <Feed :title="feed.title" :headlines="feed.items" v-if="feed.items.length"/>
     </div>
   </div>
 </template>
@@ -27,7 +17,8 @@
   import config from '../models/config';
   import FeedData from '../models/feeddata';
 
-  import Headline from './headline.vue';
+
+  import Feed from './feed.vue';
   import Loading from './loading.vue';
   import Settings from './settings.vue';
 
@@ -43,8 +34,8 @@
       });
     },
     components: {
+      Feed,
       Loading,
-      Headline,
       Settings
     }
   }
@@ -75,26 +66,5 @@
         color: #91a4ad;
       }
     }
-  }
-
-  .feed {
-    > .title {
-      padding: 10px;
-      padding-left: 35px;
-      background: #b0c0c7;
-      color: white;
-      font-size: 18px;
-    }
-    .headlines {
-      padding: 20px;
-      border-top: 1px solid #b0c0c7;
-      border-bottom: 1px solid #b0c0c7;
-      background: white;
-      min-height: 100px;
-    }
-  }
-
-  .latest.headlines {
-    background: none;
   }
 </style>
