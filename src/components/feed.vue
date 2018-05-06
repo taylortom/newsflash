@@ -13,7 +13,7 @@
   export default {
     props: {
       title: {
-        type: Object,
+        type: String,
         required: true
       },
       headlines: {
