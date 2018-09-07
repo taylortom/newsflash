@@ -1,4 +1,4 @@
-import userConfig from '../../conf/config.js';
+import userConfig from './conf/config.js';
 
 class Config {
   constructor() {
