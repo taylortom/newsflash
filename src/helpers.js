@@ -1,4 +1,4 @@
-import config from './models/config';
+import config from './config';
 
 function transformData(data) {
   var today = getToday();
