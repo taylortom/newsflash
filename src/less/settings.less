@@ -1,0 +1,75 @@
+button.icon-btn {
+  background: none;
+  color: #657075;
+  border: none;
+  padding: 10px;
+  font-size: 16px;
+  outline: none;
+  cursor: pointer;
+
+  &.open {
+    position: absolute;
+    opacity: 0;
+    transition-property: none;
+  }
+  &.close {
+    float: right;
+  }
+}
+
+.settings {
+  float: left;
+  height: 100vh;
+  color: #59686f;
+  overflow: hidden;
+  &.hidden {
+    margin-right: 0;
+    button.open {
+      opacity: 1;
+      transition-property: opacity;
+      transition-delay: 0.25s;
+    }
+    .panel {
+      width: 0;
+    }
+  }
+  .panel {
+    height: 100%;
+    width: 300px;
+    overflow: auto;
+    background: #b0c0c7;
+    transition: width 0.3s;
+    .inner {
+      padding: 40px 0;
+    }
+  }
+}
+
+.block {
+  > .title {
+    font-size: 120%;
+    font-weight: bold;
+    margin-bottom: 20px;
+    background: #a2b0b7;
+    padding: 10px;
+    border: 1px solid #8f9598;
+    border-left: none;
+    border-right: none;
+  }
+}
+.feed-item {
+  margin: 0 10px 20px 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  .icon {
+    margin-right: 5px;
+  }
+  a {
+    color: inherit;
+  }
+  .title {
+    font-weight: bold;
+    margin-right: 5px;
+  }
+}
