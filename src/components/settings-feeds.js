@@ -1,5 +1,6 @@
 import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faRss } from '@fortawesome/free-solid-svg-icons';
 
 class SettingsFeeds extends React.Component {
   render() {
@@ -15,7 +16,7 @@ class SettingsFeeds extends React.Component {
     return this.props.feeds.map(feed => {
       return (
         <div key={feed.id} className="feed-item">
-          <span className="icon"><FontAwesomeIcon icon="rss" /></span>
+          <span className="icon"><FontAwesomeIcon icon={faRss} /></span>
           <a href="#" data-id={feed.id} onClick={this.onFeedClick.bind(this)}>
             <span className="title">{feed.title}</span>
             <span className="count">({feed.items.length})</span>
