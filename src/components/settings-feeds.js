@@ -14,8 +14,8 @@ class SettingsFeeds extends React.Component {
   renderFeeds() {
     return this.props.feeds.map(feed => {
       return (
-        <div className="feed-item">
-          <span className="icon"><FontAwesomeIcon icon="feedIcon" /></span>
+        <div key={feed.id} className="feed-item">
+          <span className="icon"><FontAwesomeIcon icon="rss" /></span>
           <a href="#" data-id={feed.id} onClick={this.onFeedClick.bind(this)}>
             <span className="title">{feed.title}</span>
             <span className="count">({feed.items.length})</span>

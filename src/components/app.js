@@ -27,13 +27,13 @@ class App extends React.Component {
   render() {
     return (
       <div id="app">
-        <Settings feeds={this.state.feeds}/>
+        <Settings feeds={this.state.feeds} isHidden={true}/>
         <div className="inner">
           <div className="title">
             {this.state.title}
-            <div className="lastUpdated">{this.state.lastUpdated}</div>
+            <div className="lastUpdated">Latest {this.state.title}: {this.state.lastUpdated}</div>
           </div>
-          <div className="feeds">
+          <div className={`feeds ${this.state.feeds.length ? '' : 'display-none'}`}>
             {this.renderFeeds()}
           </div>
         </div>
