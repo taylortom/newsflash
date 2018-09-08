@@ -1,23 +1,28 @@
 import React from 'react';
-import Config from '../config';
+import config from '../config';
 import Feed from './feed';
 import FeedData from '../feeddata';
+import Loading from './loading';
 import Settings from './settings';
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      title: Config.get('appName'),
+      title: config.get('appName'),
       feeds: [],
       lastUpdated: null,
-      latestHeadlineCount: 0
+      latestHeadlineCount: 0,
+      feedLoadCount: 0,
+      feedLoadPercent: 0
     };
     this.fd = new FeedData();
+    this.fd.on('fetched', this.updateLoadingProgress.bind(this));
+
     setInterval(() => {
       console.log('Updating');
       this.fetchFeeds();
-    }, Config.get('updateInterval'));
+    }, config.get('updateInterval'));
   }
 
   componentDidMount() {
@@ -33,7 +38,8 @@ class App extends React.Component {
             {this.state.title}
             <div className="lastUpdated">Latest {this.state.title}: {this.state.lastUpdated}</div>
           </div>
-          <div className={`feeds ${this.state.feeds.length ? '' : 'display-none'}`}>
+          <Loading percent={this.state.feedLoadPercent}/>
+          <div className="feeds">
             {this.renderFeeds()}
           </div>
         </div>
@@ -58,6 +64,15 @@ class App extends React.Component {
         console.warn('Failed to load any feeds');
       }
     }).catch(console.error);
+  }
+
+  updateLoadingProgress() {
+    const newFeedLoadCount = this.state.feedLoadCount+1;
+    const newFeedLoadPercent = Math.round((newFeedLoadCount/config.get('feeds').length)*100);
+    this.setState({
+      feedLoadPercent: newFeedLoadPercent,
+      feedLoadCount: newFeedLoadCount
+    });
   }
 }
 

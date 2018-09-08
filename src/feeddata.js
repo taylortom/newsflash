@@ -1,9 +1,11 @@
 import axios from 'axios';
 import config from './config';
+import EventEmitter from 'events';
 import helpers from './helpers';
 
-class FeedData {
+class FeedData extends EventEmitter {
   constructor() {
+    super();
     this.feeds = [];
     this.latestHeadlines = [];
     this.lastUpdated = '';
@@ -11,21 +13,6 @@ class FeedData {
 
   load() {
     return this.fetchFeeds();
-  }
-
-  fetchFeedsSync() {
-    return new Promise((resolve, reject) => {
-      let feeds = config.get('feeds');
-      const _fetchFeedsRecursive = function() {
-        if(feeds.length === 0) {
-          return resolve();
-        }
-        setTimeout(() => {
-          this.fetchFeed(feeds.pop()).then(_fetchFeedsRecursive).catch(reject);
-        }, 2000);
-      }.bind(this);
-      _fetchFeedsRecursive();
-    });
   }
 
   fetchFeeds() {
@@ -42,7 +29,7 @@ class FeedData {
   }
 
   fetchFeed(url) {
-    return new Promise(function(resolve, reject) {
+    return new Promise((resolve, reject) => {
       axios.get(config.get('apiUrl'), {
         params: {
           rss_url: url,
@@ -57,6 +44,7 @@ class FeedData {
         helpers.transformData(data);
         // modify data to return data.feed with the items attached directly
         resolve(Object.assign({}, data.feed, { items: data.items.filter(helpers.filterOldHeadlines) }));
+        this.emit('fetched', url);
       })
       .catch((error) => {
         console.warn(error.message, url);
