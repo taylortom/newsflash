@@ -6,7 +6,8 @@ class Feed extends HTMLElement {
     const i = setInterval(() => window.location = window.location, 300000);
   }
   async render() {
-    const data = await this.fetch();
+    const { name } = await this.fetch('config');
+    const data = await this.fetch('news');
     const page = this.createEl({
       type: 'div',
       attributes: { class: 'page' },
@@ -14,7 +15,7 @@ class Feed extends HTMLElement {
         <style>@import "css/news.css";</style>
         <header>
           <div class="inner">
-            <h1>News</h1>
+            <h1>${name}</h1>
             <div>Updated at ${this.formatDate(Date.now())}</div>
           </div>
         </header>
@@ -47,9 +48,9 @@ class Feed extends HTMLElement {
     if(Number.isInteger(d)) d = new Date(d);
     return `${d.toLocaleTimeString().slice(0,5)}, ${d.toDateString()}`;
   }
-  async fetch() {
+  async fetch(endpoint) {
     try {
-      return (await fetch(`${window.location.origin}/api/news`)).json();
+      return (await fetch(`${window.location.origin}/api/${endpoint}`)).json();
     } catch(e) {
       console.log(e);
     }
