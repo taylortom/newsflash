@@ -49,7 +49,7 @@ class Feed extends HTMLElement {
   }
   async fetch() {
     try {
-      return (await fetch(`http://localhost:5000/api/news`)).json();
+      return (await fetch(`${window.location.origin}/api/news`)).json();
     } catch(e) {
       console.log(e);
     }
