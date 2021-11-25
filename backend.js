@@ -24,7 +24,7 @@ class Server {
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify(await this.getRSS()), 'utf-8');
       return;
-    } 
+    }
     await this.serveStatic(req, res);
   }
   async getRSS() {

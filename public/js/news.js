@@ -7,9 +7,9 @@ class Feed extends HTMLElement {
   }
   async render() {
     const data = await this.fetch();
-    const page = this.createEl({ 
-      type: 'div', 
-      attributes: { class: 'page' }, 
+    const page = this.createEl({
+      type: 'div',
+      attributes: { class: 'page' },
       html: `
         <style>@import "css/news.css";</style>
         <header>
@@ -18,7 +18,7 @@ class Feed extends HTMLElement {
             <div>Updated at ${this.formatDate(Date.now())}</div>
           </div>
         </header>
-      ` 
+      `
     });
     const items = this.createEl({ type: 'div', attributes: { class: 'items' } });
     data.forEach(({ title, feed, created, link }) => {
