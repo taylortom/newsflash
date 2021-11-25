@@ -12,18 +12,18 @@ class Server {
       try {
         await this.handleRequest(req, res);
       } catch(e) {
-        res.writeHead(e.statusCode || 500, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ message: e.message }), 'utf-8');
+        return this.sendResponse(res, { statusCode: e.statusCode || 500, data: { message: e.message } });
       }
     });
     this._http.listen(this.config.port);
     console.log(`Server started listening on ${this.config.port}`);
   }
   async handleRequest(req, res) {
+    if(req.method === 'GET' && req.url.startsWith('/api/config')) {
+      return this.sendResponse(res, { data: this.config });
+    }
     if(req.method === 'GET' && req.url.startsWith('/api/news')) {
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(await this.getRSS()), 'utf-8');
-      return;
+      return this.sendResponse(res, { data: await this.getRSS() });
     }
     await this.serveStatic(req, res);
   }
@@ -43,8 +43,11 @@ class Server {
   async serveStatic(req, res) {
     const filePath = req.url === '/' ? '/index.html' : req.url;
     const fileExt = filePath.slice(filePath.lastIndexOf('.')+1);
-    res.writeHead(200, { 'Content-Type': this.extToMime(fileExt) });
-    res.end(await fs.readFile(`./public${filePath}`), 'utf-8');
+    this.sendResponse(res, { contentType: this.extToMime(fileExt), data: await fs.readFile(`./public${filePath}`) });
+  }
+  sendResponse(res, { statusCode=200, contentType='application/json', data }) {
+    res.writeHead(statusCode, { 'Content-Type': contentType });
+    res.end(contentType === 'application/json' ? JSON.stringify(data) : data, 'utf-8');
   }
   extToMime(ext) {
     switch(ext) {
