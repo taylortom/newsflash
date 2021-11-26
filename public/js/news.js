@@ -6,14 +6,14 @@ class Feed extends HTMLElement {
     const i = setInterval(() => window.location = window.location, 300000);
   }
   async render() {
-    const { name } = await this.fetch('config');
+    const { name, colour } = await this.fetch('config');
     const data = await this.fetch('news');
     const page = this.createEl({
       type: 'div',
       attributes: { class: 'page' },
       html: `
         <style>@import "css/news.css";</style>
-        <header>
+        <header style="background-color:${colour}">
           <div class="inner">
             <h1>${name}</h1>
             <div>Updated at ${this.formatDate(Date.now())}</div>
