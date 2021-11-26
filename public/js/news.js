@@ -46,7 +46,7 @@ class Feed extends HTMLElement {
   }
   formatDate(d) {
     if(Number.isInteger(d)) d = new Date(d);
-    return `${d.toLocaleTimeString().slice(0,5)}, ${d.toDateString()}`;
+    return `${d.toDateString()}, ${d.toLocaleTimeString().slice(0,5)}`;
   }
   async fetch(endpoint) {
     try {
