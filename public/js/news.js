@@ -29,7 +29,7 @@ class Feed extends HTMLElement {
         html: `
           <div class="title"><a href="${link}" target="_blank">${title}</a></div>
           <div class="metadata">
-          <div class="feed"><a href="#" target="_blank">${feed}</a></div>
+            <div class="feed"><a href="#" target="_blank">${feed}</a></div>
             <div class="date">${this.formatDate(created)}</div>
           </div>
         `
