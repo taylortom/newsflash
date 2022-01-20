@@ -22,7 +22,11 @@ class Feed extends HTMLElement {
       `
     });
     const items = this.createEl({ type: 'div', attributes: { class: 'items' } });
-    data.forEach(({ title, feed, created, link }) => {
+    data.forEach(({ title, description, feed, created, link }) => {
+      let extraHtml = '';
+      if(feed === 'Hacker News') {
+        extraHtml = `<a href="${description.match(`href="(.+)"`)[1]}" target="_blank">Comments</a>`;
+      }
       items.appendChild(this.createEl({
         type: 'div',
         attributes: { class: 'feed-item' },
@@ -31,6 +35,7 @@ class Feed extends HTMLElement {
           <div class="metadata">
             <div class="feed">${feed}</div>
             <div class="date">${this.formatDate(created)}</div>
+            ${extraHtml}
           </div>
         `
       }));
