@@ -16,8 +16,8 @@ class Feed extends HTMLElement {
         <style>@import "css/news.css";</style>
         <header>
           <div class="inner">
-            <h1>${name}</h1>
-            <div>Updated at ${this.formatDate(Date.now())}</div>
+            <span class="title">${name}</span>
+            <span class="date">Updated at ${this.formatDate(Date.now())}</span>
           </div>
         </header>
       `

@@ -9,8 +9,12 @@ header {
   color: white;
   padding: 20px 35px;
 }
-header h1 {
+.page header .title {
   font-size: 300%;
+  font-weight: bold;
+  display: block;
+}
+header h1 {
   margin: 0;
 }
 .items, header .inner {
@@ -72,7 +76,17 @@ header h1 {
 .page.darkeighties header {
   background: #363636;
   color: #d1d7e3;
+  padding: 10px;
   border-bottom: 1px solid #4e5459;
+}
+.page.darkeighties header .title {
+  font-size: 1.6em;
+  font-weight: bold;
+}
+.page.darkeighties header .date {
+  font-size: 0.8em;
+  margin-left: 10px;
+  color: #6da1d5;
 }
 .page.darkeighties .metadata .feed {
   color: #ca8cbf;
