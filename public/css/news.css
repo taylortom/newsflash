@@ -1,15 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,300;0,400;0,700;1,100;1,700&display=swap');
 
-body.dark {
-  background: #242424;
-  color: white;
-}
 .page {
   font-family: 'Noto Serif', serif;
   font-weight: 400;
 }
 header {
-  background: #3e3e3e;
+  background: #001e39;
   color: white;
   padding: 20px 35px;
 }
@@ -50,4 +46,40 @@ header h1 {
 .feed-item .metadata a {
   font-size: 80%;
   color: inherit;
+}
+
+/**
+* Colour schemes
+*/
+.page.darkgrey {
+  background: #242424;
+  color: #868686;
+}
+.page.darkgrey header {
+  background: #3e3e3e;
+  color: #bdbdbd;
+}
+.page.darkgrey .feed-item .title a {
+  color: #ca8cbf;
+}
+/*
+ * ------------------------------------ 
+ */
+.page.darkeighties {
+  background: #272d33;
+  color: #afbdca;
+}
+.page.darkeighties header {
+  background: #363636;
+  color: #d1d7e3;
+  border-bottom: 1px solid #4e5459;
+}
+.page.darkeighties .metadata .feed {
+  color: #ca8cbf;
+}
+.page.darkeighties .metadata a {
+  color: #4bac8c;
+}
+.page.darkeighties .feed-item .title a {
+  color: #afbdca;
 }
