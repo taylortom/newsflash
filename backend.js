@@ -41,7 +41,8 @@ class Server {
       .slice(0, 100);
   }
   async serveStatic(req, res) {
-    const filePath = req.url === '/' ? '/index.html' : req.url;
+    const [url] = req.url.split('?');
+    const filePath = url === '/' ? '/index.html' : url;
     const fileExt = filePath.slice(filePath.lastIndexOf('.')+1);
     this.sendResponse(res, { contentType: this.extToMime(fileExt), data: await fs.readFile(`./public${filePath}`) });
   }

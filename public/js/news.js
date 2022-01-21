@@ -6,14 +6,15 @@ class Feed extends HTMLElement {
     const i = setInterval(() => window.location = window.location, 300000);
   }
   async render() {
-    const { name, colour } = await this.fetch('config');
+    const query = new URLSearchParams(window.location.search);
+    const { name } = await this.fetch('config');
     const data = await this.fetch('news');
     const page = this.createEl({
       type: 'div',
-      attributes: { class: 'page' },
+      attributes: { class: `page ${query.get('theme') || ''}` },
       html: `
         <style>@import "css/news.css";</style>
-        <header style="background-color:${colour}">
+        <header>
           <div class="inner">
             <h1>${name}</h1>
             <div>Updated at ${this.formatDate(Date.now())}</div>
