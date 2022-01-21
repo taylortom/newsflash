@@ -80,6 +80,7 @@ header h1 {
   border-bottom: 1px solid #4e5459;
 }
 .page.darkeighties header .title {
+  display: initial;
   font-size: 1.6em;
   font-weight: bold;
 }
