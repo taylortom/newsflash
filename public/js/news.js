@@ -1,28 +1,40 @@
 class Feed extends HTMLElement {
   constructor() {
     super();
-    this.attachShadow({ mode: 'open' });
-    this.render();
-    const i = setInterval(() => window.location = window.location, 300000);
+    this.init();
   }
-  async render() {
+  async init() {
+    this.config = await this.fetch('config');
+    
+    this.attachShadow({ mode: 'open' });
+    await this.renderPage();
+    await this.renderItems();
+    // start render loop
+    setInterval(() => this.renderItems(), this.config.updateInterval ?? 300000);
+  }
+  async renderPage() {
     const query = new URLSearchParams(window.location.search);
-    const { name } = await this.fetch('config');
-    const data = await this.fetch('news');
-    const page = this.createEl({
+    this.page = this.createEl({
       type: 'div',
       attributes: { class: `page ${query.get('theme') || ''}` },
       html: `
         <style>@import "css/news.css";</style>
         <header>
           <div class="inner">
-            <span class="title">${name}</span>
+            <span class="title">${this.config.name}</span>
             <span class="date">Updated at ${this.formatDate(Date.now())}</span>
           </div>
         </header>
       `
     });
-    const items = this.createEl({ type: 'div', attributes: { class: 'items' } });
+    this.shadowRoot.append(this.page);
+  }
+  async renderItems() {
+    const data = await this.fetch('news');
+    // clear out previous items before rendering
+    this.shadowRoot.getElementById('items')?.remove();
+
+    const items = this.createEl({ type: 'div', attributes: { id: 'items', class: 'items' } });
     data.forEach(({ title, description, feed, created, link }) => {
       let extraHtml = '';
       if(feed === 'Hacker News') {
@@ -41,8 +53,7 @@ class Feed extends HTMLElement {
         `
       }));
     });
-    page.append(items);
-    this.shadowRoot.append(page);
+    this.page.append(items);
   }
   createEl({ type, attributes={}, html }) {
     const el = document.createElement(type);
