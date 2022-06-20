@@ -5,7 +5,7 @@ class Feed extends HTMLElement {
   }
   async init() {
     this.config = await this.fetch('config');
-    
+
     this.attachShadow({ mode: 'open' });
     await this.renderPage();
     await this.renderItems();
