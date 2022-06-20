@@ -22,7 +22,7 @@ class Feed extends HTMLElement {
         <header>
           <div class="inner">
             <span class="title">${this.config.name}</span>
-            <span class="date">Updated at <span id="timestamp">${this.formatDate(Date.now())}</span></span>
+            <span class="date">Updated at <span id="timestamp"></span></span>
           </div>
         </header>
       `
