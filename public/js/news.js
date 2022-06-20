@@ -53,7 +53,9 @@ class Feed extends HTMLElement {
         `
       }));
     });
-    this.shadowRoot.getElementById('timestamp')?.innerHTML = this.formatDate(Date.now());
+    const timestamp = this.shadowRoot.getElementById('timestamp');
+    if(timestamp) timestamp.innerHTML = this.formatDate(Date.now());
+
     this.page.append(items);
   }
   createEl({ type, attributes={}, html }) {
