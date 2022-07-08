@@ -28,11 +28,24 @@ class Server {
     await this.serveStatic(req, res);
   }
   async getRSS() {
-    return (await Promise.all(this.config.feeds.map(async f => {
-      const d = await rssToJson.parse(f);
-      return d.items.map(i => Object.assign(i, { feed: d.title }))
-    })))
-      .reduce((m,i) => [...m, ...i], [])
+    const results = [];
+    await Promise.allSettled(this.config.feeds.map(f => {
+      return new Promise(async (resolve, reject) => {
+        const t = setTimeout(() => {
+          console.log(`RSS load timeout for ${f}`);
+          reject();
+        }, this.config.timeout);
+        try {
+          const d = await rssToJson.parse(f);
+          clearInterval(t);
+          if(d.items) results.push(...d.items.map(i => Object.assign(i, { feed: d.title })));
+        } catch(e) {
+          console.log(f, e.errno);
+        }
+        resolve();
+      });
+    }));
+    return results
       .sort((a, b) => {
         if(a.created < b.created) return 1;
         if(a.created > b.created) return -1;
