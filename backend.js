@@ -56,7 +56,7 @@ class Server {
         try {
           const d = await rssToJson.parse(f);
           clearInterval(t);
-          if(d.items) results.push(...d.items.map(i => Object.assign(i, { feed: d.title })));
+          if(d.items) results.push(...d.items.map(i => Object.assign(i, { feed: this.generateTitle(d) })));
         } catch(e) {
           console.log(f, e.errno);
         }
@@ -70,6 +70,13 @@ class Server {
         return 0;
       })
       .slice(0, 100);
+  }
+  generateTitle(data) {
+    const maxLength = 15;
+    if(data.title.length < maxLength) {
+      return data.title;
+    }
+    return data.title.slice(0, maxLength).trimEnd() + '...';
   }
   async serveStatic(req, res) {
     const [url] = req.url.split('?');
