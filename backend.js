@@ -7,7 +7,7 @@ class Server {
     this.init().catch(console.log);
   }
   async init() {
-    this.config = JSON.parse(await fs.readFile('./config.json'));
+    await this.updateConfig();
     this._http = http.createServer(async (req, res) => {
       try {
         await this.handleRequest(req, res);
@@ -41,7 +41,11 @@ class Server {
     }
     await this.serveStatic(req, res);
   }
+  async updateConfig() {
+    this.config = JSON.parse(await fs.readFile('./config.json'))
+  }
   async getRSS() {
+    await this.updateConfig();
     const results = [];
     await Promise.allSettled(this.config.feeds.map(f => {
       return new Promise(async (resolve, reject) => {
