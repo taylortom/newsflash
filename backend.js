@@ -73,7 +73,7 @@ class Server {
   }
   generateTitle(data) {
     const maxLength = 15;
-    const [title] = data.title.split(/[^A-Za-z]/);
+    const [title] = data.title.split(/[^A-Za-z\s]/);
     if(title.length < maxLength) {
       return title;
     }
