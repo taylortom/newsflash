@@ -44,10 +44,10 @@ class Server {
   async updateConfig() {
     this.config = JSON.parse(await fs.readFile('./config.json'))
   }
-  async getRSS() {
+  async getRSS(query) {
     await this.updateConfig();
     const results = [];
-    await Promise.allSettled(this.config.feeds.map(f => {
+    await Promise.allSettled(this.config.feeds[query.feeds].map(f => {
       return new Promise(async (resolve, reject) => {
         const t = setTimeout(() => {
           console.log(`RSS load timeout for ${f}`);
