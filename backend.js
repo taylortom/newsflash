@@ -73,10 +73,11 @@ class Server {
   }
   generateTitle(data) {
     const maxLength = 15;
+    const [title] = data.title.split(/[^A-Za-z]/);
     if(data.title.length < maxLength) {
-      return data.title;
+      return title;
     }
-    return data.title.slice(0, maxLength).trimEnd() + '...';
+    return title.slice(0, maxLength).trimEnd() + '...';
   }
   async serveStatic(req, res) {
     const [url] = req.url.split('?');
