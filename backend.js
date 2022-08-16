@@ -18,12 +18,26 @@ class Server {
     this._http.listen(this.config.port);
     console.log(`Server started listening on ${this.config.port}`);
   }
+  parseQuery(req) {
+    const queryString = req.url.split('?')[1] ?? '';
+    const query = {};
+    
+    queryString.split('&').forEach(pair => {
+      const [key, value] = pair.split('=');
+      query[key] = value;
+    });
+    if(!query.feeds || !this.config.feeds[query.feeds]) {
+      query.feeds = 'default';
+    }
+    return query;
+  }
   async handleRequest(req, res) {
+    const query = this.parseQuery(req);
     if(req.method === 'GET' && req.url.startsWith('/api/config')) {
       return this.sendResponse(res, { data: this.config });
     }
     if(req.method === 'GET' && req.url.startsWith('/api/news')) {
-      return this.sendResponse(res, { data: await this.getRSS() });
+      return this.sendResponse(res, { data: await this.getRSS(query) });
     }
     await this.serveStatic(req, res);
   }
