@@ -1,3 +1,6 @@
+body {
+  margin: 0;
+}
 .page {
   font-family: 'Noto Serif', monospace;
   font-weight: 400;
