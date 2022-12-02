@@ -5,8 +5,9 @@
   font-size: 100%;
 }
 header {
-  background: #001e39;
+  position: fixed;
   padding: 3%;
+  background: #001e39;
   color: white;
 }
 .page header .title {
@@ -14,7 +15,7 @@ header {
   display: block;
 }
 .page header .date {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   display: block;
 }
 header h1 {
@@ -42,7 +43,7 @@ header h1 {
 .feed-item .metadata > div {
   display: inline;
   margin-right: 10px;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
 }
 .feed-item .metadata .feed {
   font-weight: 700;
