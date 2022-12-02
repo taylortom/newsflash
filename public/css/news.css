@@ -24,11 +24,11 @@ header h1 {
   max-width: 1000px;
   margin: 0 auto;
 }
-.items {
-  padding: 3%;
-}
+/* .items { */
+/* } */
 .feed-item {
-  padding: 8px 0;
+  padding: 3%;
+  /* padding: 8px 0; */
   border-bottom: 1px solid rgba(0,0,0,0.1);
 }
 .feed-item .title {
@@ -84,7 +84,6 @@ header h1 {
   display: initial;
 }
 .page.darkeighties header .date {
-  margin-left: 10px;
   color: #6da1d5;
 }
 .page.darkeighties .metadata .feed {
