@@ -7,6 +7,8 @@
 header {
   position: fixed;
   padding: 3%;
+  height: 100px;
+  width: 100%;
   background: #001e39;
   color: white;
 }
@@ -26,6 +28,7 @@ header h1 {
   margin: 0 auto;
 }
 .items {
+  margin-top: 100px;
   padding: 3%;
 }
 .feed-item {
