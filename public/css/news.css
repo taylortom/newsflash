@@ -5,10 +5,7 @@
   font-size: 100%;
 }
 header {
-  position: fixed;
   padding: 3%;
-  height: 100px;
-  width: 100%;
   background: #001e39;
   color: white;
 }
@@ -17,7 +14,7 @@ header {
   display: block;
 }
 .page header .date {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   display: block;
 }
 header h1 {
@@ -28,7 +25,6 @@ header h1 {
   margin: 0 auto;
 }
 .items {
-  margin-top: 100px;
   padding: 3%;
 }
 .feed-item {
@@ -46,7 +42,7 @@ header h1 {
 .feed-item .metadata > div {
   display: inline;
   margin-right: 10px;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
 }
 .feed-item .metadata .feed {
   font-weight: 700;
