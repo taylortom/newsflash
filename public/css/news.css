@@ -2,32 +2,37 @@
   font-family: 'Noto Serif', monospace;
   font-weight: 400;
   font-style: normal;
+  font-size: 100%;
 }
 header {
   background: #001e39;
+  padding: 3%;
   color: white;
-  padding: 20px 35px;
 }
 .page header .title {
-  font-size: 300%;
+  font-size: 3rem;
+  display: block;
+}
+.page header .date {
+  font-size: 0.8rem;
   display: block;
 }
 header h1 {
   margin: 0;
 }
-.items, header .inner {
+.items, header .inner { 
   max-width: 1000px;
   margin: 0 auto;
 }
 .items {
-  padding: 15px;
+  padding: 3%;
 }
 .feed-item {
   padding: 8px 0;
   border-bottom: 1px solid rgba(0,0,0,0.1);
 }
 .feed-item .title {
-  font-size: 125%;
+  font-size: 1.25rem;
   font-weight: 700;
 }
 .feed-item .title a {
@@ -35,9 +40,9 @@ header h1 {
   text-decoration: none;
 }
 .feed-item .metadata > div {
-  display: inline-block;
-  font-size: 80%;
+  display: inline;
   margin-right: 10px;
+  font-size: 0.8rem;
 }
 .feed-item .metadata .feed {
   font-weight: 700;
@@ -46,7 +51,6 @@ header h1 {
   font-weight: 400;
 }
 .feed-item .metadata a {
-  font-size: 80%;
   color: inherit;
 }
 
@@ -74,15 +78,12 @@ header h1 {
 .page.darkeighties header {
   background: #363636;
   color: #d1d7e3;
-  padding: 10px;
   border-bottom: 1px solid #4e5459;
 }
 .page.darkeighties header .title {
   display: initial;
-  font-size: 135%;
 }
 .page.darkeighties header .date {
-  font-size: 80%;
   margin-left: 10px;
   color: #6da1d5;
 }
