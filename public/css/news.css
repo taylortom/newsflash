@@ -89,11 +89,7 @@ header .inner,
 }
 
 @media only screen and (max-device-width: 480px) {
-  header .inner,
-  .items { 
-    padding: 3rem;
-  }
-  .feed-item {
-    padding: 1.5rem 0;
-  }
+  .page header .title { font-size: 5rem; }
+  header .inner, .items { padding: 2rem; }
+  .feed-item { padding: 2rem 0; }
 }
