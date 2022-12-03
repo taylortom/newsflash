@@ -54,7 +54,7 @@ header .inner,
 .items { 
   max-width: 1000px;
   margin: 0 auto;
-  padding: 1rem;
+  padding: 1.5rem;
 }
 .feed-item {
   padding: 0.8rem 0;
