@@ -30,10 +30,12 @@ class Feed extends HTMLElement {
     this.shadowRoot.append(this.page);
   }
   async renderItems() {
-    const data = await this.fetch('news');
     // clear out previous items before rendering
     this.shadowRoot.getElementById('items')?.remove();
-
+    const data = await this.fetch('news');
+    if(!data) {
+      return;
+    }
     const items = this.createEl({ type: 'div', attributes: { id: 'items', class: 'items' } });
     data.forEach(({ title, description, feed, created, link }) => {
       let extraHtml = '';
@@ -69,11 +71,12 @@ class Feed extends HTMLElement {
     return `${d.toDateString()}, ${d.toLocaleTimeString().slice(0,5)}`;
   }
   async fetch(endpoint) {
-    try {
-      return (await fetch(`${window.location.origin}/api/${endpoint}`)).json();
-    } catch(e) {
-      console.log(e);
+    const res = await fetch(`${window.location.origin}/api/${endpoint}`);
+    const data = await res.json();
+    if(res.status > 299) {
+      return console.error(res.statusText, data.message);
     }
+    return data;
   }
 }
 
