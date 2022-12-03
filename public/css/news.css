@@ -54,10 +54,10 @@ header .inner,
 .items { 
   max-width: 1000px;
   margin: 0 auto;
-  padding: 15px 2%;
+  padding: 1rem;
 }
 .feed-item {
-  padding: 10px 0;
+  padding: 0.8rem 0;
   border-bottom: 1px solid var(--border-colour);
   font-weight: 400;
 }
