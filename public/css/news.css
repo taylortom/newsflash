@@ -52,12 +52,12 @@ header h1 {
 }
 header .inner,
 .items { 
-  max-width: 1000px;
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 1.5rem;
+  padding: 1rem;
 }
 .feed-item {
-  padding: 0.8rem 0;
+  padding: 0.65rem 0;
   border-bottom: 1px solid var(--border-colour);
   font-weight: 400;
 }
@@ -86,4 +86,14 @@ header .inner,
 }
 .feed-item .metadata a {
   color: var(--link-text-colour);
+}
+
+@media only screen and (max-device-width: 480px) {
+  header .inner,
+  .items { 
+    padding: 3rem;
+  }
+  .feed-item {
+    padding: 1.5rem 0;
+  }
 }
