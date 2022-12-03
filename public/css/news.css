@@ -92,4 +92,5 @@ header .inner,
   .page header .title { font-size: 5rem; }
   header .inner, .items { padding: 2rem; }
   .feed-item { padding: 2rem 0; }
+  .feed-item .title { font-size: 1rem; }
 }
