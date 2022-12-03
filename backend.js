@@ -54,9 +54,9 @@ class Server {
           reject();
         }, this.config.timeout);
         try {
-          const d = await rssToJson.parse(f);
+          const d = await rssToJson.parse(f.feed);
           clearTimeout(t);
-          if(d.items) results.push(...d.items.map(i => Object.assign(i, { feed: this.generateTitle(d) })));
+          if(d.items) results.push(...d.items.map(i => Object.assign(i, { feed: this.generateTitle(d), type: f.type })));
         } catch(e) {
           console.log(f, e.errno);
         }

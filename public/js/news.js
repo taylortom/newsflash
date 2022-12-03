@@ -37,7 +37,7 @@ class Feed extends HTMLElement {
       return;
     }
     const items = this.createEl({ type: 'div', attributes: { id: 'items', class: 'items' } });
-    data.forEach(({ title, description, feed, created, link }) => {
+    data.forEach(({ title, description, feed, created, link, type }) => {
       let extraHtml = '';
       if(feed === 'Hacker News') {
         extraHtml = `<a href="${description.match(`href="(.+)"`)[1]}" target="_blank">Comments</a>`;
@@ -48,6 +48,7 @@ class Feed extends HTMLElement {
         html: `
           <div class="title"><a href="${link}" target="_blank">${title}</a></div>
           <div class="metadata">
+            <span class="icon fa-solid fa-${this.typeToIcon(type)}"></span>
             <div class="feed">${feed}</div>
             <div class="date">${this.formatDate(created)}</div>
             ${extraHtml}
@@ -69,6 +70,15 @@ class Feed extends HTMLElement {
   formatDate(d) {
     if(Number.isInteger(d)) d = new Date(d);
     return `${d.toDateString()}, ${d.toLocaleTimeString().slice(0,5)}`;
+  }
+  typeToIcon(type) {
+    switch(type) {
+      case 'code': return 'code';
+      case 'gaming': return 'gamepad';
+      case 'sport': return 'futbol';
+      case 'world': return 'earth';
+      default: return 'file-lines';
+    }
   }
   async fetch(endpoint) {
     const res = await fetch(`${window.location.origin}/api/${endpoint}`);

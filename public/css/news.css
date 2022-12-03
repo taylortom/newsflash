@@ -1,6 +1,4 @@
-:root {
-  background: red;
-}
+@import 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css';
 
 .page {
   --background-colour: white;
@@ -78,8 +76,16 @@ header .inner,
 }
 .feed-item .metadata > * {
   display: inline;
-  margin-right: 10px;
+  margin-right: 1rem;
   font-size: 0.7rem;
+}
+.feed-item .metadata .icon {
+  margin-right: .5rem;
+  position: relative;
+  color: var(--text-colour);
+  font-size: 1rem;
+  top: .1rem;
+  opacity: 0.4;
 }
 .feed-item .metadata .feed {
   color: var(--feed-text-colour);
