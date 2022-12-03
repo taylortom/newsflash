@@ -1,13 +1,47 @@
 .page {
+  --background-colour: white;
+  --text-colour: black;
+  --header-background-colour: #001e39;
+  --header-text-colour: white;
+  --item-padding: 15px 0;
+  --feed-text-colour: var(--header-background-colour);
+  --date-text-colour: var(--text-colour);
+  --link-text-colour: var(--header-background-colour);
+  --border-colour: rgba(0,0,0,0.1);
+}
+.page.darkeighties {
+  --background-colour: #272d33;
+  --text-colour: #afbdca;
+  --header-background-colour: #333d46;
+  --header-text-colour: #d1d7e3;
+  --feed-text-colour: #ca8cbf;
+  --link-text-colour: #4bac8c;
+  --border-colour: rgba(255,255,255,0.1);
+}
+.page.darkgrey {
+  --background-colour: #242424;
+  --text-colour: #868686;
+  --header-background-colour: #3e3e3e;
+  --header-text-colour: #bdbdbd;
+  --feed-text-colour: #cacaca;
+  --link-text-colour: var(--feed-text-colour);
+}
+
+.page {
   font-family: 'Noto Serif', monospace;
   font-weight: 400;
   font-style: normal;
   font-size: 100%;
+  background: var(--background-colour);
+  color: var(--text-colour);
 }
-header {
-  padding: 3%;
-  background: #001e39;
-  color: white;
+.page header {
+  background: var(--header-background-colour);
+  color: var(--header-text-colour);
+  border-bottom: 1px solid var(--border-colour);
+}
+.page header .inner {
+  padding: var(--item-padding);
 }
 .page header .title {
   font-size: 3rem;
@@ -27,16 +61,16 @@ header h1 {
 /* .items { */
 /* } */
 .feed-item {
-  padding: 3%;
-  /* padding: 8px 0; */
-  border-bottom: 1px solid rgba(0,0,0,0.1);
+  padding: var(--item-padding);
+  border-bottom: 1px solid var(--border-colour);
+  font-weight: 400;
 }
 .feed-item .title {
   font-size: 1.25rem;
   font-weight: 700;
 }
 .feed-item .title a {
-  color: black;
+  color: var(--text-colour);
   text-decoration: none;
 }
 .feed-item .metadata > div {
@@ -45,54 +79,13 @@ header h1 {
   font-size: 0.7rem;
 }
 .feed-item .metadata .feed {
+  color: var(--feed-text-colour);
   font-weight: 700;
 }
 .feed-item .metadata .date {
+  color: var(--date-text-colour);
   font-weight: 400;
 }
 .feed-item .metadata a {
   color: inherit;
-}
-
-/**
-* Colour schemes
-*/
-.page.darkgrey {
-  background: #242424;
-  color: #868686;
-}
-.page.darkgrey header {
-  background: #3e3e3e;
-  color: #bdbdbd;
-}
-.page.darkgrey .feed-item .title a {
-  color: #ca8cbf;
-}
-/*
- * ------------------------------------ 
- */
-.page.darkeighties {
-  background: #272d33;
-  color: #afbdca;
-}
-.page.darkeighties header {
-  background: #363636;
-  color: #d1d7e3;
-  border-bottom: 1px solid #4e5459;
-}
-.page.darkeighties header .title {
-  display: initial;
-}
-.page.darkeighties header .date {
-  color: #6da1d5;
-}
-.page.darkeighties .metadata .feed {
-  color: #ca8cbf;
-}
-.page.darkeighties .metadata a {
-  color: #4bac8c;
-}
-.page.darkeighties .feed-item .title a {
-  font-weight: 400;
-  color: #afbdca;
 }
