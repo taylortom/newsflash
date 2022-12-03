@@ -1,3 +1,7 @@
+:root {
+  background: red;
+}
+
 .page {
   --background-colour: white;
   --text-colour: black;
@@ -27,6 +31,7 @@
 }
 
 .page {
+  min-height: 100vh;
   font-family: 'Noto Serif', monospace;
   font-weight: 400;
   font-style: normal;
