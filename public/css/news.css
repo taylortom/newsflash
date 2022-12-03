@@ -6,7 +6,7 @@
   --feed-text-colour: var(--header-background-colour);
   --date-text-colour: var(--text-colour);
   --link-text-colour: var(--header-background-colour);
-  --border-colour: rgba(0,0,0,0.1);
+  --border-colour: rgba(0,0,0,0.2);
 }
 .page.darkeighties {
   --background-colour: #272d33;
@@ -15,7 +15,7 @@
   --header-text-colour: #d1d7e3;
   --feed-text-colour: #ca8cbf;
   --link-text-colour: #4bac8c;
-  --border-colour: rgba(255,255,255,0.1);
+  --border-colour: rgba(255,255,255,0.15);
 }
 .page.darkgrey {
   --background-colour: #242424;
