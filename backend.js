@@ -21,7 +21,7 @@ class Server {
   parseQuery(req) {
     const queryString = req.url.split('?')[1] ?? '';
     const query = {};
-    
+
     queryString.split('&').forEach(pair => {
       const [key, value] = pair.split('=');
       query[key] = value;
@@ -73,7 +73,7 @@ class Server {
   }
   generateTitle(data) {
     const maxLength = 15;
-    const [title] = data.title.split(/[^A-Za-z\s]/);
+    const [title] = data.title.split(/[^A-Za-z0-9\s]/);
     if(title.length < maxLength) {
       return title;
     }
