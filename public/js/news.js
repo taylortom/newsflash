@@ -74,10 +74,15 @@ class Feed extends HTMLElement {
   typeToIcon(type) {
     switch(type) {
       case 'code': return 'code';
+      case 'coffee': return 'mug-hot';
       case 'gaming': return 'gamepad';
+      case 'guitar': return 'guitar';
+      case 'movies': return 'ticket';
+      case 'music': return 'headphones-simple';
       case 'sport': return 'futbol';
+      case 'watches': return 'clock';
       case 'world': return 'earth';
-      default: return 'file-lines';
+      default: return 'bullhorn';
     }
   }
   async fetch(endpoint) {
