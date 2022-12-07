@@ -105,3 +105,7 @@ header .inner,
 .feed-item .metadata a {
   color: var(--link-text-colour);
 }
+
+@media only screen and (max-device-width: 480px) {
+  .feed-item .title { font-size: 1rem; }
+}
