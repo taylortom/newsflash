@@ -75,7 +75,7 @@ header .inner,
   text-decoration: none;
 }
 .feed-item .metadata > * {
-  display: inline;
+  display: inline-block;
   margin-right: 1rem;
   font-size: 0.7rem;
 }
