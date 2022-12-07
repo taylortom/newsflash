@@ -88,8 +88,15 @@ header .inner,
   opacity: 0.4;
 }
 .feed-item .metadata .feed {
+  display: inline-block;
+  position: relative;
+  top: 4px;
+  max-width: 125px;
   color: var(--feed-text-colour);
   font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .feed-item .metadata .date {
   color: var(--date-text-colour);
