@@ -107,6 +107,7 @@ header .inner,
 }
 
 @media only screen and (max-device-width: 480px) {
+  .page header .title { font-size: 1.75rem; }
   .feed-item { padding: 1rem 0; }
   .feed-item .title { font-size: 1rem; }
 }
