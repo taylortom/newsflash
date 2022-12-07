@@ -105,10 +105,3 @@ header .inner,
 .feed-item .metadata a {
   color: var(--link-text-colour);
 }
-
-@media only screen and (max-device-width: 480px) {
-  .page header .title { font-size: 4rem; }
-  header .inner, .items { padding: 2rem; }
-  .feed-item { padding: 2rem 0; }
-  .feed-item .title { font-size: 1rem; }
-}
