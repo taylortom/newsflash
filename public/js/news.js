@@ -22,7 +22,8 @@ class Feed extends HTMLElement {
         <header>
           <div class="inner">
             <span class="title">${this.config.name}</span>
-            <span class="date">Updated at <span id="timestamp"></span></span>
+            <span id="date" class="date">Updated at <span id="timestamp"></span></span>
+            <div id="loading-spinner" class="loading-spinner"><div></div><div></div><div></div><div></div></div>
           </div>
         </header>
       `
@@ -30,6 +31,13 @@ class Feed extends HTMLElement {
     this.shadowRoot.append(this.page);
   }
   async renderItems() {
+    const date = this.shadowRoot.getElementById('date');
+    const loader = this.shadowRoot.getElementById('loading-spinner');
+    const hiddenClass = 'display-none';
+
+    date.classList.add(hiddenClass);
+    loader.classList.remove(hiddenClass);
+
     const data = await this.fetch('news');
     // clear out previous items before rendering
     this.shadowRoot.getElementById('items')?.remove();
@@ -55,6 +63,9 @@ class Feed extends HTMLElement {
     });
     const timestamp = this.shadowRoot.getElementById('timestamp');
     if(timestamp) timestamp.innerHTML = this.formatDate(Date.now());
+
+    date.classList.remove(hiddenClass);
+    loader.classList.add(hiddenClass);
 
     this.page.append(items);
   }
