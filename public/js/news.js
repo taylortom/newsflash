@@ -32,13 +32,14 @@ class Feed extends HTMLElement {
   }
   async renderItems() {
     this.showLoading();
-
-    const data = await this.fetch('news');
     // clear out previous items before rendering
     this.shadowRoot.getElementById('items')?.remove();
-
+    const data = await this.fetch('news');
+    if(!data) {
+      return;
+    }
     const items = this.createEl({ type: 'div', attributes: { id: 'items', class: 'items' } });
-    data.forEach(({ title, description, feed, created, link }) => {
+    data.forEach(({ title, description, feed, created, link, type }) => {
       let extraHtml = '';
       if(feed === 'Hacker News') {
         extraHtml = `<a href="${description.match(`href="(.+)"`)[1]}" target="_blank">Comments</a>`;
@@ -49,6 +50,7 @@ class Feed extends HTMLElement {
         html: `
           <div class="title"><a href="${link}" target="_blank">${title}</a></div>
           <div class="metadata">
+            <span class="icon fa-solid fa-${this.typeToIcon(type)}"></span>
             <div class="feed">${feed}</div>
             <div class="date">${this.formatDate(created)}</div>
             ${extraHtml}
@@ -80,12 +82,27 @@ class Feed extends HTMLElement {
     if(Number.isInteger(d)) d = new Date(d);
     return `${d.toDateString()}, ${d.toLocaleTimeString().slice(0,5)}`;
   }
-  async fetch(endpoint) {
-    try {
-      return (await fetch(`${window.location.origin}/api/${endpoint}`)).json();
-    } catch(e) {
-      console.log(e);
+  typeToIcon(type) {
+    switch(type) {
+      case 'code': return 'code';
+      case 'coffee': return 'mug-hot';
+      case 'gaming': return 'gamepad';
+      case 'guitar': return 'guitar';
+      case 'movies': return 'ticket';
+      case 'music': return 'headphones-simple';
+      case 'sport': return 'futbol';
+      case 'watches': return 'clock';
+      case 'world': return 'earth';
+      default: return 'bullhorn';
     }
+  }
+  async fetch(endpoint) {
+    const res = await fetch(`${window.location.origin}/api/${endpoint}`);
+    const data = await res.json();
+    if(res.status > 299) {
+      return console.error(res.statusText, data.message);
+    }
+    return data;
   }
 }
 

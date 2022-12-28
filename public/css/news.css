@@ -1,64 +1,127 @@
+@import 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css';
+
 .page {
+  --background-colour: white;
+  --text-colour: black;
+  --header-background-colour: #001e39;
+  --header-text-colour: white;
+  --feed-text-colour: var(--header-background-colour);
+  --date-text-colour: var(--text-colour);
+  --link-text-colour: var(--header-background-colour);
+  --border-colour: rgba(0,0,0,0.2);
+}
+.page.darkeighties {
+  --background-colour: #272d33;
+  --text-colour: #afbdca;
+  --header-background-colour: #333d46;
+  --header-text-colour: #d1d7e3;
+  --feed-text-colour: #ca8cbf;
+  --link-text-colour: #4bac8c;
+  --border-colour: rgba(255,255,255,0.15);
+}
+.page.darkgrey {
+  --background-colour: #242424;
+  --text-colour: #868686;
+  --header-background-colour: #3e3e3e;
+  --header-text-colour: #bdbdbd;
+  --feed-text-colour: #cacaca;
+  --link-text-colour: var(--feed-text-colour);
+}
+
+.page {
+  min-height: 100vh;
   font-family: 'Noto Serif', monospace;
   font-weight: 400;
   font-style: normal;
+  font-size: 100%;
+  background: var(--background-colour);
+  color: var(--text-colour);
 }
-header {
-  background: #001e39;
-  color: white;
-  padding: 20px 35px;
+.page header {
+  background: var(--header-background-colour);
+  color: var(--header-text-colour);
+  border-bottom: 1px solid var(--border-colour);
 }
+
 .page header .title {
-  font-size: 300%;
+  font-size: 3rem;
   display: block;
+}
+.page header .date {
+  display: block;
+  margin-left: 3px;
+  font-size: 0.7rem;
 }
 header h1 {
   margin: 0;
 }
-.items, header .inner {
-  max-width: 1000px;
+header .inner,
+.items { 
+  max-width: 1100px;
   margin: 0 auto;
-}
-.items {
-  padding: 15px;
+  padding: 1rem;
 }
 .feed-item {
-  padding: 8px 0;
-  border-bottom: 1px solid rgba(0,0,0,0.1);
+  padding: 0.65rem 0;
+  border-bottom: 1px solid var(--border-colour);
+  font-weight: 400;
+}
+.feed-item:last-child {
+  border: none;
 }
 .feed-item .title {
-  font-size: 125%;
-  font-weight: 700;
+  font-size: 1.25rem;
 }
 .feed-item .title a {
-  color: black;
+  color: var(--text-colour);
   text-decoration: none;
 }
-.feed-item .metadata > div {
+.feed-item .metadata > * {
   display: inline-block;
-  font-size: 80%;
-  margin-right: 10px;
+  margin-right: 1rem;
+  font-size: 0.7rem;
+}
+.feed-item .metadata .icon {
+  margin-right: .5rem;
+  position: relative;
+  color: var(--text-colour);
+  font-size: 1rem;
+  top: .1rem;
+  opacity: 0.4;
 }
 .feed-item .metadata .feed {
+  display: inline-block;
+  position: relative;
+  top: 4px;
+  max-width: 125px;
+  color: var(--feed-text-colour);
   font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .feed-item .metadata .date {
+  color: var(--date-text-colour);
   font-weight: 400;
 }
 .feed-item .metadata a {
-  font-size: 80%;
-  color: inherit;
+  color: var(--link-text-colour);
+}
+
+@media only screen and (max-device-width: 480px) {
+  .page header .title { font-size: 1.75rem; }
+  .feed-item { padding: 1rem 0; }
+  .feed-item .title { font-size: 1rem; }
 }
 
 /**
 * Loading spinner
 */
 #loading {
-  display: inline-block;
   position: relative;
   width: 20px;
   height: 7px;
-  margin-left: 20px;
+  margin: 4.5px 0;
 }
 #loading div {
   position: absolute;
@@ -66,7 +129,7 @@ header h1 {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #fff;
+  background: var(--feed-text-colour);
   animation-timing-function: cubic-bezier(0, 1, 1, 0);
 }
 #loading div:nth-child(1) {
@@ -94,57 +157,6 @@ header h1 {
 @keyframes loading2 {
   0% { transform: translate(0, 0); }
   100% { transform: translate(10px, 0); }
-}
-
-
-/**
-* Colour schemes
-*/
-.page.darkgrey {
-  background: #242424;
-  color: #868686;
-}
-.page.darkgrey header {
-  background: #3e3e3e;
-  color: #bdbdbd;
-}
-.page.darkgrey .feed-item .title a {
-  color: #ca8cbf;
-}
-/*
- * ------------------------------------ 
- */
-.page.darkeighties {
-  background: #272d33;
-  color: #afbdca;
-}
-.page.darkeighties header {
-  background: #363636;
-  color: #d1d7e3;
-  padding: 10px;
-  border-bottom: 1px solid #4e5459;
-}
-.page.darkeighties header .title {
-  display: initial;
-  font-size: 135%;
-}
-.page.darkeighties header .date {
-  font-size: 80%;
-  margin-left: 10px;
-  color: #6da1d5;
-}
-.page.darkeighties header #loading div {
-  background: #ca8cbf;
-}
-.page.darkeighties .metadata .feed {
-  color: #ca8cbf;
-}
-.page.darkeighties .metadata a {
-  color: #4bac8c;
-}
-.page.darkeighties .feed-item .title a {
-  font-weight: 400;
-  color: #afbdca;
 }
 
 .display-none {

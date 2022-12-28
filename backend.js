@@ -7,7 +7,7 @@ class Server {
     this.init().catch(console.log);
   }
   async init() {
-    this.config = JSON.parse(await fs.readFile('./config.json'));
+    await this.updateConfig();
     this._http = http.createServer(async (req, res) => {
       try {
         await this.handleRequest(req, res);
@@ -18,27 +18,45 @@ class Server {
     this._http.listen(this.config.port);
     console.log(`Server started listening on ${this.config.port}`);
   }
+  parseQuery(req) {
+    const queryString = req.url.split('?')[1] ?? '';
+    const query = {};
+
+    queryString.split('&').forEach(pair => {
+      const [key, value] = pair.split('=');
+      query[key] = value;
+    });
+    if(!query.feeds || !this.config.feeds[query.feeds]) {
+      query.feeds = 'default';
+    }
+    return query;
+  }
   async handleRequest(req, res) {
+    const query = this.parseQuery(req);
     if(req.method === 'GET' && req.url.startsWith('/api/config')) {
       return this.sendResponse(res, { data: this.config });
     }
     if(req.method === 'GET' && req.url.startsWith('/api/news')) {
-      return this.sendResponse(res, { data: await this.getRSS() });
+      return this.sendResponse(res, { data: await this.getRSS(query) });
     }
     await this.serveStatic(req, res);
   }
-  async getRSS() {
+  async updateConfig() {
+    this.config = JSON.parse(await fs.readFile('./config.json'))
+  }
+  async getRSS(query) {
+    await this.updateConfig();
     const results = [];
-    await Promise.allSettled(this.config.feeds.map(f => {
+    await Promise.allSettled(this.config.feeds[query.feeds].map(f => {
       return new Promise(async (resolve, reject) => {
         const t = setTimeout(() => {
           console.log(`RSS load timeout for ${f}`);
           reject();
         }, this.config.timeout);
         try {
-          const d = await rssToJson.parse(f);
-          clearInterval(t);
-          if(d.items) results.push(...d.items.map(i => Object.assign(i, { feed: d.title })));
+          const d = await rssToJson.parse(f.feed);
+          clearTimeout(t);
+          if(d.items) results.push(...d.items.map(i => Object.assign(i, { feed: this.generateTitle(d), type: f.type })));
         } catch(e) {
           console.log(f, e.errno);
         }
@@ -52,6 +70,9 @@ class Server {
         return 0;
       })
       .slice(0, 100);
+  }
+  generateTitle(data) {
+    return data.title.split(/[^A-Za-z0-9\s]/)[0];
   }
   async serveStatic(req, res) {
     const [url] = req.url.split('?');
