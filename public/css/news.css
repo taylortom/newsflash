@@ -65,7 +65,7 @@ header .inner,
   padding: 1rem;
 }
 .items { 
-  padding-top: 125px;
+  padding-top: 8rem;
 }
 .feed-item {
   padding: 0.65rem 0;
@@ -116,6 +116,7 @@ header .inner,
 
 @media only screen and (max-device-width: 480px) {
   .page header .title { font-size: 1.75rem; }
+  .items { padding-top: 5rem; }
   .feed-item { padding: 1rem 0; }
   .feed-item .title { font-size: 1rem; }
 }
