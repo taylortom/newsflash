@@ -31,12 +31,7 @@ class Feed extends HTMLElement {
     this.shadowRoot.append(this.page);
   }
   async renderItems() {
-    const date = this.shadowRoot.getElementById('date');
-    const loader = this.shadowRoot.getElementById('loading-spinner');
-    const hiddenClass = 'display-none';
-
-    date.classList.add(hiddenClass);
-    loader.classList.remove(hiddenClass);
+    this.showLoading();
 
     const data = await this.fetch('news');
     // clear out previous items before rendering
@@ -64,8 +59,7 @@ class Feed extends HTMLElement {
     const timestamp = this.shadowRoot.getElementById('timestamp');
     if(timestamp) timestamp.innerHTML = this.formatDate(Date.now());
 
-    date.classList.remove(hiddenClass);
-    loader.classList.add(hiddenClass);
+    this.showLoading(false);
 
     this.page.append(items);
   }
@@ -74,6 +68,13 @@ class Feed extends HTMLElement {
     Object.entries(attributes).forEach(([k,v]) => el.setAttribute(k,v));
     if(html) el.innerHTML = html;
     return el;
+  }
+  showLoading(showLoading = true) {
+    const date = this.shadowRoot.getElementById('date');
+    const loader = this.shadowRoot.getElementById('loading');
+    const hiddenClass = 'display-none';
+    date.classList[showLoading ? 'add' : 'remove'](hiddenClass);
+    loader.classList[showLoading ? 'remove' : 'add'](hiddenClass);
   }
   formatDate(d) {
     if(Number.isInteger(d)) d = new Date(d);
