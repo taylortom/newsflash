@@ -38,6 +38,9 @@
   color: var(--text-colour);
 }
 .page header {
+  position: fixed;
+  width: 100%;
+  z-index: 1;
   background: var(--header-background-colour);
   color: var(--header-text-colour);
   border-bottom: 1px solid var(--border-colour);
@@ -60,6 +63,9 @@ header .inner,
   max-width: 1100px;
   margin: 0 auto;
   padding: 1rem;
+}
+.items { 
+  margin-top: 8rem;
 }
 .feed-item {
   padding: 0.65rem 0;
