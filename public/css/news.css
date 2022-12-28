@@ -121,7 +121,7 @@ header .inner,
   position: relative;
   width: 20px;
   height: 7px;
-  margin: 4.5px 0;
+  margin: 4.5px 3px;
 }
 #loading div {
   position: absolute;
