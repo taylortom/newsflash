@@ -32,12 +32,13 @@ class Feed extends HTMLElement {
   }
   async renderItems() {
     this.showLoading();
-    // clear out previous items before rendering
-    this.shadowRoot.getElementById('items')?.remove();
     const data = await this.fetch('news');
     if(!data) {
       return;
     }
+    // clear out previous items before rendering
+    this.shadowRoot.getElementById('items')?.remove();
+    
     const items = this.createEl({ type: 'div', attributes: { id: 'items', class: 'items' } });
     data.forEach(({ title, description, feed, created, link, type }) => {
       let extraHtml = '';
