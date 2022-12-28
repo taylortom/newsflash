@@ -23,7 +23,7 @@ class Feed extends HTMLElement {
           <div class="inner">
             <span class="title">${this.config.name}</span>
             <span id="date" class="date">Updated at <span id="timestamp"></span></span>
-            <div id="loading-spinner" class="loading-spinner"><div></div><div></div><div></div><div></div></div>
+            <div id="loading" class="display-none"><div></div><div></div><div></div><div></div></div>
           </div>
         </header>
       `
