@@ -136,7 +136,7 @@ header .inner,
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--feed-text-colour);
+  background: var(--header-text-colour);
   animation-timing-function: cubic-bezier(0, 1, 1, 0);
 }
 #loading div:nth-child(1) {
