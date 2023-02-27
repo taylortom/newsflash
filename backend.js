@@ -65,8 +65,8 @@ class Server {
     }));
     return results
       .sort((a, b) => {
-        if(a.published < b.published) return 1;
-        if(a.published > b.published) return -1;
+        if(a.created < b.created) return 1;
+        if(a.created > b.created) return -1;
         return 0;
       })
       .slice(0, 100);
