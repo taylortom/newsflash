@@ -64,11 +64,7 @@ class Server {
       });
     }));
     return results
-      .sort((a, b) => {
-        if(a.created < b.created) return 1;
-        if(a.created > b.created) return -1;
-        return 0;
-      })
+      .sort((a, b) => a.published < b.published)
       .slice(0, 100);
   }
   generateTitle(data) {
