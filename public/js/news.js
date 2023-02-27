@@ -81,7 +81,7 @@ class Feed extends HTMLElement {
   }
   formatDate(d) {
     if(Number.isInteger(d)) d = new Date(d);
-    return `${d.toDateString()}, ${d.toLocaleTimeString().slice(0,5)}`;
+    return `${d.toDateString()}, ${d.toTimeString().slice(0,4)}`;
   }
   typeToIcon(type) {
     switch(type) {
