@@ -50,7 +50,7 @@ class Server {
     await Promise.allSettled(this.config.feeds[query.feeds].map(f => {
       return new Promise(async (resolve, reject) => {
         const t = setTimeout(() => {
-          console.log(`RSS load timeout for ${f}`);
+          console.log(`RSS load timeout for ${f.feed}`);
           reject();
         }, this.config.timeout);
         try {
@@ -58,7 +58,8 @@ class Server {
           clearTimeout(t);
           if(d.items) results.push(...d.items.map(i => Object.assign(i, { feed: f.name ?? this.generateTitle(d), type: f.type })));
         } catch(e) {
-          console.log(f, e.errno);
+          console.log(`Failed to parse ${f.feed}`, e.errno);
+          console.log(e);
         }
         resolve();
       });
