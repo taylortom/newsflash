@@ -38,7 +38,7 @@ class Feed extends HTMLElement {
     }
     // clear out previous items before rendering
     this.shadowRoot.getElementById('items')?.remove();
-    
+
     const items = this.createEl({ type: 'div', attributes: { id: 'items', class: 'items' } });
     data.forEach(({ title, description, feed, created, link, type }) => {
       let extraHtml = '';
@@ -47,7 +47,7 @@ class Feed extends HTMLElement {
       }
       items.appendChild(this.createEl({
         type: 'div',
-        attributes: { class: 'feed-item' },
+        attributes: { class: `feed-item ${type}` },
         html: `
           <div class="title"><a href="${link}" target="_blank">${title}</a></div>
           <div class="metadata">
