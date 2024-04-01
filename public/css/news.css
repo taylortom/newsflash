@@ -9,6 +9,16 @@
   --date-text-colour: var(--text-colour);
   --link-text-colour: var(--header-background-colour);
   --border-colour: rgba(0,0,0,0.2);
+  --icon-code-colour: #469e94;
+  --icon-coffee-colour: var(--icon-interests-colour);
+  --icon-gaming-colour: var(--icon-interests-colour);
+  --icon-guitar-colour: var(--icon-interests-colour);
+  --icon-interests-colour: #4bac8c;
+  --icon-music-colour: var(--icon-interests-colour);
+  --icon-news-colour: #9d271b;
+  --icon-sport-colour: #4daffa;
+  --icon-watches-colour: var(--icon-interests-colour);
+  --icon-world-colour: var(--icon-news-colour);
 }
 .page.darkeighties {
   --background-colour: #272d33;
@@ -18,6 +28,10 @@
   --feed-text-colour: #ca8cbf;
   --link-text-colour: #4bac8c;
   --border-colour: rgba(255,255,255,0.15);
+  --icon-code-colour: #97c8b3;
+  --icon-interests-colour: #896da8;
+  --icon-news-colour: #f3a781;
+  --icon-sport-colour: #9cd7ea;
 }
 .page.darkgrey {
   --background-colour: #242424;
@@ -26,6 +40,10 @@
   --header-text-colour: #bdbdbd;
   --feed-text-colour: #cacaca;
   --link-text-colour: var(--feed-text-colour);
+  --icon-code-colour: #848484;
+  --icon-interests-colour: --var(--icon-code-colour);
+  --icon-news-colour: --var(--icon-code-colour);
+  --icon-sport-colour: --var(--icon-code-colour);
 }
 
 .page {
@@ -65,12 +83,15 @@ header .inner,
   padding: 1rem;
 }
 .items { 
+  padding: 0;
   padding-top: 8rem;
 }
 .feed-item {
   padding: 0.65rem 0;
   border-bottom: 1px solid var(--border-colour);
   font-weight: 400;
+  /*border-left: 5px solid red*/;
+  padding: 0.65rem;
 }
 .feed-item:last-child {
   border: none;
@@ -93,8 +114,34 @@ header .inner,
   color: var(--text-colour);
   font-size: 1rem;
   top: .1rem;
-  opacity: 0.4;
 }
+.feed-item.code { border-left-color: var(--icon-code-colour); }
+.feed-item.code .metadata .icon { color: var(--icon-code-colour); }
+
+.feed-item.coffee { border-left-color: var(--icon-coffee-colour); }
+.feed-item.coffee .metadata .icon { color: var(--icon-coffee-colour); }
+
+.feed-item.gaming { border-left-color: var(--icon-gaming-colour); }
+.feed-item.gaming .metadata .icon { color: var(--icon-gaming-colour); }
+
+.feed-item.guitar { border-left-color: var(--icon-guitar-colour); }
+.feed-item.guitar .metadata .icon { color: var(--icon-guitar-colour); }
+
+.feed-item.music { border-left-color: var(--icon-music-colour); }
+.feed-item.music .metadata .icon { color: var(--icon-music-colour); }
+
+.feed-item.news { border-left-color: var(--icon-news-colour); }
+.feed-item.news .metadata .icon { color: var(--icon-news-colour); }
+
+.feed-item.sport { border-left-color: var(--icon-sport-colour); }
+.feed-item.sport .metadata .icon { color: var(--icon-sport-colour); }
+
+.feed-item.watches { border-left-color: var(--icon-watches-colour); }
+.feed-item.watches .metadata .icon { color: var(--icon-watches-colour); }
+
+.feed-item.world { border-left-color: var(--icon-world-colour); }
+.feed-item.world .metadata .icon { color: var(--icon-world-colour); }
+
 .feed-item .metadata .feed {
   display: inline-block;
   position: relative;
@@ -117,7 +164,7 @@ header .inner,
 @media only screen and (max-device-width: 480px) {
   .page header .title { font-size: 1.75rem; }
   .items { padding-top: 5.5rem; }
-  .feed-item { padding: 1rem 0; }
+  .feed-item { padding: 1rem; }
   .feed-item .title { font-size: 1rem; }
 }
 
