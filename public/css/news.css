@@ -11,9 +11,9 @@
   --border-colour: rgba(0,0,0,0.2);
   --icon-code-colour: #469e94;
   --icon-coffee-colour: var(--icon-interests-colour);
-  --icon-gaming-colour: var(--icon-interests-colour);
+  --icon-gaming-colour: #896da8;
   --icon-guitar-colour: var(--icon-interests-colour);
-  --icon-interests-colour: #4bac8c;
+  --icon-interests-colour: #ca8cbf;
   --icon-music-colour: var(--icon-interests-colour);
   --icon-news-colour: #9d271b;
   --icon-sport-colour: #4daffa;
@@ -29,7 +29,8 @@
   --link-text-colour: #4bac8c;
   --border-colour: rgba(255,255,255,0.15);
   --icon-code-colour: #97c8b3;
-  --icon-interests-colour: #896da8;
+  --icon-gaming-colour: #896da8;
+  --icon-interests-colour: #ddd497;
   --icon-news-colour: #f3a781;
   --icon-sport-colour: #9cd7ea;
 }
@@ -113,7 +114,7 @@ header .inner,
   position: relative;
   color: var(--text-colour);
   font-size: 1rem;
-  top: .1rem;
+  top: .2rem;
 }
 .feed-item.code { border-left-color: var(--icon-code-colour); }
 .feed-item.code .metadata .icon { color: var(--icon-code-colour); }
