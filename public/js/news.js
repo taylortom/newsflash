@@ -91,6 +91,7 @@ class Feed extends HTMLElement {
       case 'guitar': return 'guitar';
       case 'movies': return 'ticket';
       case 'music': return 'headphones-simple';
+      case 'skate': return 'circle-dot';  
       case 'sport': return 'futbol';
       case 'watches': return 'clock';
       case 'world': return 'earth';
