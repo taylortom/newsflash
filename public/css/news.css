@@ -16,6 +16,7 @@
   --icon-interests-colour: #ca8cbf;
   --icon-music-colour: var(--icon-interests-colour);
   --icon-news-colour: #9d271b;
+  --icon-skate-colour: #fa8e4d;
   --icon-sport-colour: #4daffa;
   --icon-watches-colour: var(--icon-interests-colour);
   --icon-world-colour: var(--icon-news-colour);
@@ -32,6 +33,7 @@
   --icon-gaming-colour: #896da8;
   --icon-interests-colour: #ddd497;
   --icon-news-colour: #f3a781;
+  --icon-skate-colour: #5882ff;
   --icon-sport-colour: #9cd7ea;
 }
 .page.darkgrey {
@@ -42,8 +44,10 @@
   --feed-text-colour: #cacaca;
   --link-text-colour: var(--feed-text-colour);
   --icon-code-colour: #848484;
+  --icon-gaming-colour: --var(--icon-code-colour);
   --icon-interests-colour: --var(--icon-code-colour);
   --icon-news-colour: --var(--icon-code-colour);
+  --icon-skate-colour: --var(--icon-code-colour);
   --icon-sport-colour: --var(--icon-code-colour);
 }
 
@@ -133,6 +137,9 @@ header .inner,
 
 .feed-item.news { border-left-color: var(--icon-news-colour); }
 .feed-item.news .metadata .icon { color: var(--icon-news-colour); }
+
+.feed-item.skate { border-left-color: var(--icon-skate-colour); }
+.feed-item.skate .metadata .icon { color: var(--icon-skate-colour); }
 
 .feed-item.sport { border-left-color: var(--icon-sport-colour); }
 .feed-item.sport .metadata .icon { color: var(--icon-sport-colour); }
