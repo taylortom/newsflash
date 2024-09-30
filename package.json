@@ -9,7 +9,7 @@
     "start": "node backend.js"
   },
   "dependencies": {
-    "node-fetch": "^3.1.0",
+    "node-fetch": "^3.3.2",
     "rss-to-json": "^2.0.2"
   }
 }
