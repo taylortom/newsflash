@@ -50,6 +50,21 @@
   --icon-skate-colour: --var(--icon-code-colour);
   --icon-sport-colour: --var(--icon-code-colour);
 }
+.page.homeassistant {
+  --background-colour: #292c3c;
+  --text-colour: #c6d0f5;
+  --header-background-colour: #232634;
+  --header-text-colour: #d1d7e3;
+  --feed-text-colour: #ca9ee6;
+  --link-text-colour: #2196f3;
+  --border-colour: #3d4155;
+  --icon-code-colour: #81c8be;
+  --icon-gaming-colour: #926bc7;
+  --icon-interests-colour: #e5c890;
+  --icon-news-colour: #f3a781;
+  --icon-skate-colour: #2196f3;
+  --icon-sport-colour: #2196f3;
+}
 
 .page {
   min-height: 100vh;
