@@ -1,6 +1,13 @@
 import fs from 'fs/promises';
 import http from 'http';
 import rssParser from './rss-parser.js';
+import jsonToRss from './json-to-rss.js';
+
+// RFC-compliant hostname pattern:
+// - Must start and end with alphanumeric character
+// - Can contain alphanumeric, hyphens, and dots in between
+// - No consecutive dots, no leading/trailing dots or hyphens
+const HOSTNAME_PATTERN = /^[a-zA-Z0-9]([a-zA-Z0-9\-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9\-]*[a-zA-Z0-9])?)*$/;
 
 class Server {
   constructor() {
@@ -39,6 +46,25 @@ class Server {
     if(req.method === 'GET' && req.url.startsWith('/api/news')) {
       return this.sendResponse(res, { data: await this.getRSS(query) });
     }
+    if(req.method === 'GET' && req.url.startsWith('/api/rss')) {
+      const newsData = await this.getRSS(query);
+      // Determine base URL for RSS feed links
+      // RECOMMENDED: Set config.baseUrl in production for security and consistency
+      // Fallback uses Host header (sanitized) and protocol detection
+      // Note: Host header and X-Forwarded-Proto are client-controllable;
+      // config.baseUrl should be used in production environments
+      let baseUrl = this.config.baseUrl;
+      if (!baseUrl) {
+        const protocol = this.getProtocol(req);
+        baseUrl = `${protocol}://${this.sanitizeHost(req.headers.host)}`;
+      }
+      const rssXml = jsonToRss.toRSS(newsData, {
+        title: this.config.name || 'Newsflash',
+        description: 'Aggregated news feed',
+        link: baseUrl
+      });
+      return this.sendResponse(res, { contentType: 'application/rss+xml', data: rssXml });
+    }
     await this.serveStatic(req, res);
   }
   async updateConfig() {
@@ -74,6 +100,52 @@ class Server {
   }
   generateTitle(data) {
     return data.title.split(/[^A-Za-z0-9\s]/)[0].trim();
+  }
+  getProtocol(req) {
+    // Detect protocol from request (for proper RSS feed URLs)
+    // Note: X-Forwarded-Proto is trusted by default, which is standard for proxy deployments
+    // For production use, set config.baseUrl instead of relying on headers
+    // Check X-Forwarded-Proto header (set by proxies/load balancers)
+    const forwardedProto = req.headers['x-forwarded-proto'];
+    if (forwardedProto === 'https') {
+      return 'https';
+    }
+    // Check if connection is encrypted (direct HTTPS)
+    if (req.socket && req.socket.encrypted) {
+      return 'https';
+    }
+    // Default to http
+    return 'http';
+  }
+  sanitizeHost(host) {
+    // Validate and sanitize Host header to prevent injection attacks
+    if (!host || typeof host !== 'string') {
+      return `localhost:${this.config.port}`;
+    }
+    
+    // Reject hosts with multiple colons (invalid format)
+    const colonCount = (host.match(/:/g) || []).length;
+    if (colonCount > 1) {
+      return `localhost:${this.config.port}`;
+    }
+    
+    // Split hostname and port
+    const [hostname, portStr] = host.split(':');
+    
+    // Validate hostname using RFC-compliant pattern
+    if (!HOSTNAME_PATTERN.test(hostname)) {
+      return `localhost:${this.config.port}`;
+    }
+    
+    // Validate port if specified
+    if (portStr !== undefined) {
+      const port = parseInt(portStr, 10);
+      if (isNaN(port) || port < 1 || port > 65535) {
+        return `localhost:${this.config.port}`;
+      }
+    }
+    
+    return host;
   }
   async serveStatic(req, res) {
     const [url] = req.url.split('?');
