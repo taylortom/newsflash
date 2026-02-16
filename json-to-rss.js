@@ -56,6 +56,7 @@ export function toRSS(items, options = {}) {
   const channelTitle = escapeXml(title);
   const channelDescription = escapeXml(description);
   const channelLink = escapeXml(link);
+  const channelLanguage = escapeXml(language);
   
   let rssItems = '';
   
@@ -69,7 +70,8 @@ export function toRSS(items, options = {}) {
       // Items from backend should always have published/created timestamps
       const itemPubDate = formatRFC822Date(item.published || item.created || Date.now());
       const itemGuid = escapeXml(item.id || item.link || '');
-      const isPermaLink = itemGuid === escapeXml(item.link || '');
+      // isPermaLink is true when guid equals the link (both already escaped)
+      const isPermaLink = itemGuid === itemLink;
       
       let itemXml = `    <item>
       <title>${itemTitle}</title>
@@ -97,7 +99,7 @@ export function toRSS(items, options = {}) {
     <title>${channelTitle}</title>
     <description>${channelDescription}</description>
     <link>${channelLink}</link>
-    <language>${language}</language>
+    <language>${channelLanguage}</language>
     <lastBuildDate>${formatRFC822Date(Date.now())}</lastBuildDate>
     <atom:link href="${channelLink}/api/rss" rel="self" type="application/rss+xml" />
 ${rssItems}
