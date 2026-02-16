@@ -1,6 +1,6 @@
 import fs from 'fs/promises';
 import http from 'http';
-import rssToJson from 'rss-to-json';
+import rssParser from './rss-parser.js';
 
 class Server {
   constructor() {
@@ -54,7 +54,7 @@ class Server {
           reject();
         }, this.config.timeout);
         try {
-          const d = await rssToJson.parse(f.feed);
+          const d = await rssParser.parse(f.feed);
           clearTimeout(t);
           if(d.items) results.push(...d.items.map(i => Object.assign(i, { feed: f.name ?? this.generateTitle(d), type: f.type ?? 'news' })));
         } catch(e) {
