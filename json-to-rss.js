@@ -70,10 +70,10 @@ export function toRSS(items, options = {}) {
       // Items from backend should always have published/created timestamps
       const itemPubDate = formatRFC822Date(item.published || item.created || Date.now());
       // isPermaLink indicates whether guid is a permalink (URL)
-      // It's true when guid value matches the link (regardless of whether it came from item.id or item.link)
+      // It's true when guid value matches the link and link exists
       const guidValue = item.id || item.link || '';
       const itemGuid = escapeXml(guidValue);
-      const isPermaLink = guidValue === item.link;
+      const isPermaLink = !!item.link && guidValue === item.link;
       
       let itemXml = `    <item>
       <title>${itemTitle}</title>

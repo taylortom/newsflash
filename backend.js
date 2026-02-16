@@ -88,10 +88,24 @@ class Server {
   }
   sanitizeHost(host) {
     // Validate and sanitize Host header to prevent injection attacks
-    // Allow only alphanumeric, dots, hyphens, colons (for port)
-    if (!host || !/^[a-zA-Z0-9.\-:]+$/.test(host)) {
+    if (!host || typeof host !== 'string') {
       return `localhost:${this.config.port}`;
     }
+    
+    // Check for valid hostname format (alphanumeric, dots, hyphens, optional port)
+    if (!/^[a-zA-Z0-9.\-]+(?::[0-9]+)?$/.test(host)) {
+      return `localhost:${this.config.port}`;
+    }
+    
+    // If port is specified, validate it's in valid range
+    const colonIndex = host.indexOf(':');
+    if (colonIndex !== -1) {
+      const port = parseInt(host.substring(colonIndex + 1), 10);
+      if (isNaN(port) || port < 1 || port > 65535) {
+        return `localhost:${this.config.port}`;
+      }
+    }
+    
     return host;
   }
   async serveStatic(req, res) {
