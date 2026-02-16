@@ -1,6 +1,7 @@
 import fs from 'fs/promises';
 import http from 'http';
 import rssParser from './rss-parser.js';
+import jsonToRss from './json-to-rss.js';
 
 class Server {
   constructor() {
@@ -38,6 +39,15 @@ class Server {
     }
     if(req.method === 'GET' && req.url.startsWith('/api/news')) {
       return this.sendResponse(res, { data: await this.getRSS(query) });
+    }
+    if(req.method === 'GET' && req.url.startsWith('/api/rss')) {
+      const newsData = await this.getRSS(query);
+      const rssXml = jsonToRss.toRSS(newsData, {
+        title: this.config.name || 'Newsflash',
+        description: 'Aggregated news feed',
+        link: `http://localhost:${this.config.port}`
+      });
+      return this.sendResponse(res, { contentType: 'application/rss+xml', data: rssXml });
     }
     await this.serveStatic(req, res);
   }
