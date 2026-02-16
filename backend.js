@@ -48,7 +48,11 @@ class Server {
     }
     if(req.method === 'GET' && req.url.startsWith('/api/rss')) {
       const newsData = await this.getRSS(query);
-      // Determine protocol from request or config
+      // Determine base URL for RSS feed links
+      // RECOMMENDED: Set config.baseUrl in production for security and consistency
+      // Fallback uses Host header (sanitized) and protocol detection
+      // Note: Host header and X-Forwarded-Proto are client-controllable;
+      // config.baseUrl should be used in production environments
       let baseUrl = this.config.baseUrl;
       if (!baseUrl) {
         const protocol = this.getProtocol(req);
@@ -99,6 +103,8 @@ class Server {
   }
   getProtocol(req) {
     // Detect protocol from request (for proper RSS feed URLs)
+    // Note: X-Forwarded-Proto is trusted by default, which is standard for proxy deployments
+    // For production use, set config.baseUrl instead of relying on headers
     // Check X-Forwarded-Proto header (set by proxies/load balancers)
     const forwardedProto = req.headers['x-forwarded-proto'];
     if (forwardedProto === 'https') {
