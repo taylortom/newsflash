@@ -92,15 +92,24 @@ class Server {
       return `localhost:${this.config.port}`;
     }
     
-    // Check for valid hostname format (alphanumeric, dots, hyphens, optional port)
-    if (!/^[a-zA-Z0-9.\-]+(?::[0-9]+)?$/.test(host)) {
+    // Reject hosts with multiple colons (invalid format)
+    const colonCount = (host.match(/:/g) || []).length;
+    if (colonCount > 1) {
       return `localhost:${this.config.port}`;
     }
     
-    // If port is specified, validate it's in valid range
-    const colonIndex = host.indexOf(':');
-    if (colonIndex !== -1) {
-      const port = parseInt(host.substring(colonIndex + 1), 10);
+    // Split hostname and port
+    const [hostname, portStr] = host.split(':');
+    
+    // Validate hostname: alphanumeric with dots and hyphens, but not starting/ending with dot/hyphen
+    // Also reject consecutive dots or hyphens
+    if (!/^[a-zA-Z0-9]([a-zA-Z0-9\-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9\-]*[a-zA-Z0-9])?)*$/.test(hostname)) {
+      return `localhost:${this.config.port}`;
+    }
+    
+    // Validate port if specified
+    if (portStr !== undefined) {
+      const port = parseInt(portStr, 10);
       if (isNaN(port) || port < 1 || port > 65535) {
         return `localhost:${this.config.port}`;
       }
