@@ -65,15 +65,18 @@ export function toRSS(items, options = {}) {
       const itemDescription = escapeXml(item.description || item.content || '');
       const itemLink = escapeXml(item.link || '');
       const itemAuthor = item.author ? escapeXml(item.author) : '';
+      // Use current time as fallback to ensure valid RSS (RSS 2.0 requires pubDate)
+      // Items from backend should always have published/created timestamps
       const itemPubDate = formatRFC822Date(item.published || item.created || Date.now());
       const itemGuid = escapeXml(item.id || item.link || '');
+      const isPermaLink = itemGuid === escapeXml(item.link || '');
       
       let itemXml = `    <item>
       <title>${itemTitle}</title>
       <description>${itemDescription}</description>
       <link>${itemLink}</link>
       <pubDate>${itemPubDate}</pubDate>
-      <guid isPermaLink="${item.link ? 'true' : 'false'}">${itemGuid}</guid>`;
+      <guid isPermaLink="${isPermaLink ? 'true' : 'false'}">${itemGuid}</guid>`;
       
       if (itemAuthor) {
         itemXml += `\n      <author>${itemAuthor}</author>`;

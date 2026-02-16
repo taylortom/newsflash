@@ -42,10 +42,11 @@ class Server {
     }
     if(req.method === 'GET' && req.url.startsWith('/api/rss')) {
       const newsData = await this.getRSS(query);
+      const baseUrl = this.config.baseUrl || `http://${req.headers.host || 'localhost:' + this.config.port}`;
       const rssXml = jsonToRss.toRSS(newsData, {
         title: this.config.name || 'Newsflash',
         description: 'Aggregated news feed',
-        link: `http://localhost:${this.config.port}`
+        link: baseUrl
       });
       return this.sendResponse(res, { contentType: 'application/rss+xml', data: rssXml });
     }
