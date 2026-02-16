@@ -15,7 +15,7 @@ async function fetchFeed(url) {
   return new Promise((resolve, reject) => {
     const client = url.startsWith('https') ? https : http;
     
-    client.get(url, { timeout: 10000 }, (res) => {
+    const req = client.get(url, (res) => {
       if (res.statusCode !== 200) {
         reject(new Error(`Failed to fetch feed: ${res.statusCode}`));
         return;
@@ -26,6 +26,12 @@ async function fetchFeed(url) {
       res.on('data', (chunk) => { data += chunk; });
       res.on('end', () => resolve(data));
     }).on('error', reject);
+    
+    // Set timeout
+    req.setTimeout(10000, () => {
+      req.destroy();
+      reject(new Error('Request timeout'));
+    });
   });
 }
 
@@ -197,9 +203,8 @@ export async function parse(url) {
     const title = extractTag(channelContent, 'title');
     const description = extractTag(channelContent, 'description');
     const link = extractTag(channelContent, 'link');
-    const imageUrl = extractTag(channelContent, 'image')
-      ? extractTag(extractTag(channelContent, 'image') || '', 'url')
-      : null;
+    const imageTag = extractTag(channelContent, 'image');
+    const imageUrl = imageTag ? extractTag(imageTag, 'url') : null;
     
     // Extract items
     const itemMatches = channelContent.match(/<item>([\s\S]*?)<\/item>/gi) || [];
