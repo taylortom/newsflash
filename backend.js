@@ -48,7 +48,12 @@ class Server {
     }
     if(req.method === 'GET' && req.url.startsWith('/api/rss')) {
       const newsData = await this.getRSS(query);
-      const baseUrl = this.config.baseUrl || `http://${this.sanitizeHost(req.headers.host)}`;
+      // Determine protocol from request or config
+      let baseUrl = this.config.baseUrl;
+      if (!baseUrl) {
+        const protocol = this.getProtocol(req);
+        baseUrl = `${protocol}://${this.sanitizeHost(req.headers.host)}`;
+      }
       const rssXml = jsonToRss.toRSS(newsData, {
         title: this.config.name || 'Newsflash',
         description: 'Aggregated news feed',
@@ -91,6 +96,20 @@ class Server {
   }
   generateTitle(data) {
     return data.title.split(/[^A-Za-z0-9\s]/)[0].trim();
+  }
+  getProtocol(req) {
+    // Detect protocol from request (for proper RSS feed URLs)
+    // Check X-Forwarded-Proto header (set by proxies/load balancers)
+    const forwardedProto = req.headers['x-forwarded-proto'];
+    if (forwardedProto === 'https') {
+      return 'https';
+    }
+    // Check if connection is encrypted (direct HTTPS)
+    if (req.socket && req.socket.encrypted) {
+      return 'https';
+    }
+    // Default to http
+    return 'http';
   }
   sanitizeHost(host) {
     // Validate and sanitize Host header to prevent injection attacks

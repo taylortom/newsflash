@@ -41,9 +41,11 @@ function formatRFC822Date(timestamp) {
 
 /**
  * Convert JSON news items to RSS 2.0 XML
- * @param {Array} items - Array of news items
- * @param {Object} options - RSS feed options
+ * @param {Array} items - Array of news items with properties: title, description, link, published, created, author, id, feed
+ * @param {Object} options - RSS feed options (title, description, link, language)
  * @returns {string} - RSS 2.0 XML string
+ * @note Items without published/created timestamps will use Date.now() as fallback, which may produce 
+ *       misleading timestamps. This behavior matches the rss-parser.js fallback for consistency.
  */
 export function toRSS(items, options = {}) {
   const {
