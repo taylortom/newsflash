@@ -42,7 +42,7 @@ class Server {
     }
     if(req.method === 'GET' && req.url.startsWith('/api/rss')) {
       const newsData = await this.getRSS(query);
-      const baseUrl = this.config.baseUrl || `http://${req.headers.host || 'localhost:' + this.config.port}`;
+      const baseUrl = this.config.baseUrl || `http://${this.sanitizeHost(req.headers.host)}`;
       const rssXml = jsonToRss.toRSS(newsData, {
         title: this.config.name || 'Newsflash',
         description: 'Aggregated news feed',
@@ -85,6 +85,14 @@ class Server {
   }
   generateTitle(data) {
     return data.title.split(/[^A-Za-z0-9\s]/)[0].trim();
+  }
+  sanitizeHost(host) {
+    // Validate and sanitize Host header to prevent injection attacks
+    // Allow only alphanumeric, dots, hyphens, colons (for port)
+    if (!host || !/^[a-zA-Z0-9.\-:]+$/.test(host)) {
+      return `localhost:${this.config.port}`;
+    }
+    return host;
   }
   async serveStatic(req, res) {
     const [url] = req.url.split('?');

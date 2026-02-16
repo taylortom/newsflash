@@ -69,9 +69,11 @@ export function toRSS(items, options = {}) {
       // Use current time as fallback to ensure valid RSS (RSS 2.0 requires pubDate)
       // Items from backend should always have published/created timestamps
       const itemPubDate = formatRFC822Date(item.published || item.created || Date.now());
-      const itemGuid = escapeXml(item.id || item.link || '');
-      // isPermaLink is true when guid equals the link (both already escaped)
-      const isPermaLink = itemGuid === itemLink;
+      // isPermaLink indicates whether guid is a permalink (URL)
+      // It's true when guid value matches the link (regardless of whether it came from item.id or item.link)
+      const guidValue = item.id || item.link || '';
+      const itemGuid = escapeXml(guidValue);
+      const isPermaLink = guidValue === item.link;
       
       let itemXml = `    <item>
       <title>${itemTitle}</title>
@@ -93,6 +95,10 @@ export function toRSS(items, options = {}) {
     }).join('\n');
   }
   
+  // Construct atom:link self reference URL, handling trailing slashes
+  const baseUrl = link.endsWith('/') ? link.slice(0, -1) : link;
+  const selfLink = escapeXml(`${baseUrl}/api/rss`);
+  
   const rss = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
@@ -101,7 +107,7 @@ export function toRSS(items, options = {}) {
     <link>${channelLink}</link>
     <language>${channelLanguage}</language>
     <lastBuildDate>${formatRFC822Date(Date.now())}</lastBuildDate>
-    <atom:link href="${channelLink}/api/rss" rel="self" type="application/rss+xml" />
+    <atom:link href="${selfLink}" rel="self" type="application/rss+xml" />
 ${rssItems}
   </channel>
 </rss>`;
