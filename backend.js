@@ -3,6 +3,12 @@ import http from 'http';
 import rssParser from './rss-parser.js';
 import jsonToRss from './json-to-rss.js';
 
+// RFC-compliant hostname pattern:
+// - Must start and end with alphanumeric character
+// - Can contain alphanumeric, hyphens, and dots in between
+// - No consecutive dots, no leading/trailing dots or hyphens
+const HOSTNAME_PATTERN = /^[a-zA-Z0-9]([a-zA-Z0-9\-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9\-]*[a-zA-Z0-9])?)*$/;
+
 class Server {
   constructor() {
     this.init().catch(console.log);
@@ -101,9 +107,8 @@ class Server {
     // Split hostname and port
     const [hostname, portStr] = host.split(':');
     
-    // Validate hostname: alphanumeric with dots and hyphens, but not starting/ending with dot/hyphen
-    // Also reject consecutive dots or hyphens
-    if (!/^[a-zA-Z0-9]([a-zA-Z0-9\-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9\-]*[a-zA-Z0-9])?)*$/.test(hostname)) {
+    // Validate hostname using RFC-compliant pattern
+    if (!HOSTNAME_PATTERN.test(hostname)) {
       return `localhost:${this.config.port}`;
     }
     

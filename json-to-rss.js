@@ -66,8 +66,10 @@ export function toRSS(items, options = {}) {
       const itemDescription = escapeXml(item.description || item.content || '');
       const itemLink = escapeXml(item.link || '');
       const itemAuthor = item.author ? escapeXml(item.author) : '';
-      // Use current time as fallback to ensure valid RSS (RSS 2.0 requires pubDate)
-      // Items from backend should always have published/created timestamps
+      // RSS 2.0 spec requires pubDate for items. Use current time as fallback if missing.
+      // Note: Items from the backend getRSS() method should always have published/created timestamps
+      // from the rss-parser, which uses the same Date.now() fallback when parsing feeds.
+      // This ensures consistency but may produce misleading timestamps for items without dates.
       const itemPubDate = formatRFC822Date(item.published || item.created || Date.now());
       // isPermaLink indicates whether guid is a permalink (URL)
       // It's true when guid value matches the link and link exists
