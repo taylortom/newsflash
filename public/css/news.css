@@ -118,7 +118,7 @@ header .inner,
   border: none;
 }
 .feed-item .title {
-  font-size: 1.25rem;
+  font-size: 1.1rem;
 }
 .feed-item .title a {
   color: var(--text-colour);
