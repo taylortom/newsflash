@@ -1,14 +1,9 @@
 import fs from 'fs/promises';
 import http from 'http';
 import path from 'path';
+import crypto from 'crypto';
 import rssParser from './rss-parser.js';
 import jsonToRss from './json-to-rss.js';
-
-// RFC-compliant hostname pattern:
-// - Must start and end with alphanumeric character
-// - Can contain alphanumeric, hyphens, and dots in between
-// - No consecutive dots, no leading/trailing dots or hyphens
-const HOSTNAME_PATTERN = /^[a-zA-Z0-9]([a-zA-Z0-9\-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9\-]*[a-zA-Z0-9])?)*$/;
 
 class Server {
   constructor() {
@@ -17,6 +12,10 @@ class Server {
   }
   async init() {
     await this.updateConfig();
+    // Warn if baseUrl is not set
+    if (!this.config.baseUrl) {
+      console.warn('WARNING: config.baseUrl is not set. RSS feed links will be omitted. Set baseUrl in config.json for production use.');
+    }
     this._http = http.createServer(async (req, res) => {
       try {
         await this.handleRequest(req, res);
@@ -28,15 +27,12 @@ class Server {
     console.log(`Server started listening on ${this.config.port}`);
   }
   parseQuery(req) {
-    const queryString = req.url.split('?')[1] ?? '';
-    const query = {};
+    const url = new URL(req.url, 'http://localhost');
+    const feeds = url.searchParams.get('feeds');
+    const query = { feeds: 'default' };
 
-    queryString.split('&').forEach(pair => {
-      const [key, value] = pair.split('=');
-      query[key] = value;
-    });
-    if(!query.feeds || !this.config.feeds[query.feeds]) {
-      query.feeds = 'default';
+    if(feeds && this.config.feeds[feeds]) {
+      query.feeds = feeds;
     }
     return query;
   }
@@ -46,31 +42,33 @@ class Server {
       return this.sendResponse(res, { data: this.config });
     }
     if(req.method === 'GET' && req.url.startsWith('/api/news')) {
-      return this.sendResponse(res, { data: await this.getRSS(query) });
+      const data = await this.getRSS(query);
+      return this.sendResponseWithETag(req, res, { data });
     }
     if(req.method === 'GET' && req.url.startsWith('/api/rss')) {
       const newsData = await this.getRSS(query);
-      // Determine base URL for RSS feed links
-      // RECOMMENDED: Set config.baseUrl in production for security and consistency
-      // Fallback uses Host header (sanitized) and protocol detection
-      // Note: Host header and X-Forwarded-Proto are client-controllable;
-      // config.baseUrl should be used in production environments
-      let baseUrl = this.config.baseUrl;
-      if (!baseUrl) {
-        const protocol = this.getProtocol(req);
-        baseUrl = `${protocol}://${this.sanitizeHost(req.headers.host)}`;
-      }
-      const rssXml = jsonToRss.toRSS(newsData, {
+      const rssXml = jsonToRss.toRSS(newsData.items, {
         title: this.config.name || 'Newsflash',
         description: 'Aggregated news feed',
-        link: baseUrl
+        link: this.config.baseUrl || ''
       });
-      return this.sendResponse(res, { contentType: 'application/rss+xml', data: rssXml });
+      return this.sendResponseWithETag(req, res, { contentType: 'application/rss+xml', data: rssXml });
     }
     await this.serveStatic(req, res);
   }
   async updateConfig() {
-    this.config = JSON.parse(await fs.readFile('./config.json'))
+    try {
+      const configData = await fs.readFile('./config.json', 'utf-8');
+      this.config = JSON.parse(configData);
+    } catch(e) {
+      if (!this.config) {
+        // First load failed - exit with clear error message
+        console.error('ERROR: Failed to load config.json:', e.message);
+        process.exit(1);
+      }
+      // Keep previous config on subsequent failures
+      console.error('ERROR: Failed to reload config.json, keeping previous configuration:', e.message);
+    }
   }
   async getRSS(query) {
     await this.updateConfig();
@@ -81,12 +79,18 @@ class Server {
       return cached.data
     }
     const results = [];
-    await Promise.allSettled(this.config.feeds[query.feeds].map(f => {
+    const errors = [];
+
+    // Cap total aggregation time
+    const aggregationTimeout = (this.config.aggregationTimeout || 30) * 1000;
+    const fetchPromise = Promise.allSettled(this.config.feeds[query.feeds].map(f => {
       return new Promise(async (resolve, reject) => {
         const t = setTimeout(() => {
-          console.log(`RSS load timeout for ${f.feed}`);
+          const msg = `RSS load timeout for ${f.feed}`;
+          console.log(msg);
+          errors.push({ feed: f.name || f.feed, message: 'Request timeout' });
           reject();
-        }, this.config.timeout);
+        }, this.config.timeout || 10000);
         try {
           const d = await rssParser.parse(f.feed);
           clearTimeout(t);
@@ -94,68 +98,35 @@ class Server {
         } catch(e) {
           console.log(`Failed to parse ${f.feed}`, e.errno);
           console.log(e);
+          errors.push({ feed: f.name || f.feed, message: e.message || 'Parse error' });
         }
         resolve();
       });
     }));
-    const data = results
+
+    // Race against aggregation timeout
+    const timeoutPromise = new Promise((resolve) => {
+      setTimeout(() => {
+        errors.push({ feed: 'aggregation', message: `Aggregation timeout after ${this.config.aggregationTimeout || 30}s` });
+        resolve();
+      }, aggregationTimeout);
+    });
+
+    await Promise.race([fetchPromise, timeoutPromise]);
+
+    const items = results
       .sort((a, b) => {
         if(a.created < b.created) return 1;
         if(a.created > b.created) return -1;
         return 0;
       })
       .slice(0, 100);
+    const data = { items, errors };
     this._cache[cacheKey] = { time: Date.now(), data }
     return data
   }
   generateTitle(data) {
     return data.title.split(/[^A-Za-z0-9\s]/)[0].trim();
-  }
-  getProtocol(req) {
-    // Detect protocol from request (for proper RSS feed URLs)
-    // Note: X-Forwarded-Proto is trusted by default, which is standard for proxy deployments
-    // For production use, set config.baseUrl instead of relying on headers
-    // Check X-Forwarded-Proto header (set by proxies/load balancers)
-    const forwardedProto = req.headers['x-forwarded-proto'];
-    if (forwardedProto === 'https') {
-      return 'https';
-    }
-    // Check if connection is encrypted (direct HTTPS)
-    if (req.socket && req.socket.encrypted) {
-      return 'https';
-    }
-    // Default to http
-    return 'http';
-  }
-  sanitizeHost(host) {
-    // Validate and sanitize Host header to prevent injection attacks
-    if (!host || typeof host !== 'string') {
-      return `localhost:${this.config.port}`;
-    }
-    
-    // Reject hosts with multiple colons (invalid format)
-    const colonCount = (host.match(/:/g) || []).length;
-    if (colonCount > 1) {
-      return `localhost:${this.config.port}`;
-    }
-    
-    // Split hostname and port
-    const [hostname, portStr] = host.split(':');
-    
-    // Validate hostname using RFC-compliant pattern
-    if (!HOSTNAME_PATTERN.test(hostname)) {
-      return `localhost:${this.config.port}`;
-    }
-    
-    // Validate port if specified
-    if (portStr !== undefined) {
-      const port = parseInt(portStr, 10);
-      if (isNaN(port) || port < 1 || port > 65535) {
-        return `localhost:${this.config.port}`;
-      }
-    }
-    
-    return host;
   }
   async serveStatic(req, res) {
     const [url] = req.url.split('?');
@@ -168,9 +139,40 @@ class Server {
     const fileExt = resolvedPath.slice(resolvedPath.lastIndexOf('.')+1);
     this.sendResponse(res, { contentType: this.extToMime(fileExt), data: await fs.readFile(resolvedPath) });
   }
-  sendResponse(res, { statusCode=200, contentType='application/json', data }) {
-    res.writeHead(statusCode, { 'Content-Type': contentType });
+  sendResponse(res, { statusCode=200, contentType='application/json', data, headers={} }) {
+    const baseHeaders = {
+      'Content-Type': contentType,
+      'X-Content-Type-Options': 'nosniff',
+      'Referrer-Policy': 'strict-origin-when-cross-origin',
+      ...headers
+    };
+    res.writeHead(statusCode, baseHeaders);
     res.end(contentType === 'application/json' ? JSON.stringify(data) : data, 'utf-8');
+  }
+  sendResponseWithETag(req, res, { statusCode=200, contentType='application/json', data }) {
+    // Generate ETag from response body
+    const body = contentType === 'application/json' ? JSON.stringify(data) : data;
+    const etag = '"' + crypto.createHash('md5').update(body).digest('hex').substring(0, 16) + '"';
+
+    // Check If-None-Match header
+    const ifNoneMatch = req.headers['if-none-match'];
+    if (ifNoneMatch === etag) {
+      res.writeHead(304, {
+        'ETag': etag,
+        'X-Content-Type-Options': 'nosniff',
+        'Referrer-Policy': 'strict-origin-when-cross-origin'
+      });
+      res.end();
+      return;
+    }
+
+    // Send response with ETag
+    this.sendResponse(res, {
+      statusCode,
+      contentType,
+      data,
+      headers: { 'ETag': etag }
+    });
   }
   extToMime(ext) {
     switch(ext) {

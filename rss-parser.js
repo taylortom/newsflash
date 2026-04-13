@@ -117,7 +117,7 @@ function parseRSSItem(itemXml) {
     link: link || '',
     author: creator || '',
     published: parseDate(pubDate),
-    created: parseDate(pubDate),
+    created: Date.now(),
     category: [],
     content: content || '',
     enclosures: [],

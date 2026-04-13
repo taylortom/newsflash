@@ -40,7 +40,7 @@ class Feed extends HTMLElement {
     this.shadowRoot.getElementById('items')?.remove();
 
     const items = this.createEl({ type: 'div', attributes: { id: 'items', class: 'items' } });
-    data.forEach(({ title, description, feed, created, link, type }) => {
+    data.items.forEach(({ title, description, feed, created, link, type }) => {
       let extraHtml = '';
       if(feed === 'Hacker News') {
         extraHtml = `<a href="${description.match(`href="(.+)"`)[1]}" target="_blank">Comments</a>`;
