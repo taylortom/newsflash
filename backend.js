@@ -13,6 +13,7 @@ const HOSTNAME_PATTERN = /^[a-zA-Z0-9]([a-zA-Z0-9\-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]
 class Server {
   constructor() {
     this._cache = {};
+    this._metrics = {};
     this.init().catch(console.log);
   }
   async init() {
@@ -42,8 +43,14 @@ class Server {
   }
   async handleRequest(req, res) {
     const query = this.parseQuery(req);
+    if(req.method === 'GET' && req.url === '/health') {
+      return this.sendResponse(res, { data: { status: 'ok', uptime: process.uptime() } });
+    }
     if(req.method === 'GET' && req.url.startsWith('/api/config')) {
       return this.sendResponse(res, { data: this.config });
+    }
+    if(req.method === 'GET' && req.url.startsWith('/api/metrics')) {
+      return this.sendResponse(res, { data: this._metrics });
     }
     if(req.method === 'GET' && req.url.startsWith('/api/news')) {
       return this.sendResponse(res, { data: await this.getRSS(query) });
@@ -78,7 +85,7 @@ class Server {
     const cached = this._cache[cacheKey]
     const maxAge = (this.config.fetchInterval || 5) * 60 * 1000
     if (cached && (Date.now() - cached.time) < maxAge) {
-      return cached.data
+      return this._applyFilters(cached.data, query)
     }
     const results = [];
     await Promise.allSettled(this.config.feeds[query.feeds].map(f => {
@@ -87,26 +94,47 @@ class Server {
           console.log(`RSS load timeout for ${f.feed}`);
           reject();
         }, this.config.timeout);
+        const fetchStart = Date.now();
         try {
           const d = await rssParser.parse(f.feed);
           clearTimeout(t);
           if(d.items) results.push(...d.items.map(i => Object.assign(i, { feed: f.name ?? this.generateTitle(d), type: f.type ?? 'news' })));
+          this._metrics[f.feed] = Object.assign(this._metrics[f.feed] || {}, {
+            lastFetchMs: Date.now() - fetchStart,
+            lastSuccess: Date.now(),
+            failureCount: (this._metrics[f.feed]?.failureCount) || 0
+          });
         } catch(e) {
           console.log(`Failed to parse ${f.feed}`, e.errno);
           console.log(e);
+          this._metrics[f.feed] = Object.assign(this._metrics[f.feed] || {}, {
+            lastFetchMs: Date.now() - fetchStart,
+            lastFailure: Date.now(),
+            failureCount: ((this._metrics[f.feed]?.failureCount) || 0) + 1
+          });
         }
         resolve();
       });
     }));
-    const data = results
+    const allData = results
       .sort((a, b) => {
         if(a.created < b.created) return 1;
         if(a.created > b.created) return -1;
         return 0;
-      })
-      .slice(0, 100);
-    this._cache[cacheKey] = { time: Date.now(), data }
-    return data
+      });
+    this._cache[cacheKey] = { time: Date.now(), data: allData }
+    return this._applyFilters(allData, query)
+  }
+  _applyFilters(data, query) {
+    const parsedLimit = parseInt(query.limit);
+    const limit = (Number.isInteger(parsedLimit) && parsedLimit > 0) ? Math.min(parsedLimit, 100) : 100;
+    const parsedSince = parseInt(query.since);
+    const since = (Number.isInteger(parsedSince) && parsedSince > 0) ? parsedSince : null;
+    let result = data;
+    if (since) {
+      result = result.filter(i => i.created > since);
+    }
+    return result.slice(0, limit);
   }
   generateTitle(data) {
     return data.title.split(/[^A-Za-z0-9\s]/)[0].trim();
