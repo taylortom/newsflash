@@ -11,6 +11,7 @@ const HOSTNAME_PATTERN = /^[a-zA-Z0-9]([a-zA-Z0-9\-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]
 
 class Server {
   constructor() {
+    this._cache = {};
     this.init().catch(console.log);
   }
   async init() {
@@ -72,6 +73,12 @@ class Server {
   }
   async getRSS(query) {
     await this.updateConfig();
+    const cacheKey = query.feeds
+    const cached = this._cache[cacheKey]
+    const maxAge = (this.config.fetchInterval || 5) * 60 * 1000
+    if (cached && (Date.now() - cached.time) < maxAge) {
+      return cached.data
+    }
     const results = [];
     await Promise.allSettled(this.config.feeds[query.feeds].map(f => {
       return new Promise(async (resolve, reject) => {
@@ -90,13 +97,15 @@ class Server {
         resolve();
       });
     }));
-    return results
+    const data = results
       .sort((a, b) => {
         if(a.created < b.created) return 1;
         if(a.created > b.created) return -1;
         return 0;
       })
       .slice(0, 100);
+    this._cache[cacheKey] = { time: Date.now(), data }
+    return data
   }
   generateTitle(data) {
     return data.title.split(/[^A-Za-z0-9\s]/)[0].trim();
