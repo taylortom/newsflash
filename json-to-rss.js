@@ -44,8 +44,9 @@ function formatRFC822Date(timestamp) {
  * @param {Array} items - Array of news items with properties: title, description, link, published, created, author, id, feed
  * @param {Object} options - RSS feed options (title, description, link, language)
  * @returns {string} - RSS 2.0 XML string
- * @note Items without published/created timestamps will use Date.now() as fallback, which may produce 
+ * @note Items without published/created timestamps will use Date.now() as fallback, which may produce
  *       misleading timestamps. This behavior matches the rss-parser.js fallback for consistency.
+ * @note If options.link is not provided or is empty, channel <link> and atom:link will be omitted.
  */
 export function toRSS(items, options = {}) {
   const {
@@ -54,14 +55,15 @@ export function toRSS(items, options = {}) {
     link = 'http://localhost:3000',
     language = 'en'
   } = options;
-  
+
   const channelTitle = escapeXml(title);
   const channelDescription = escapeXml(description);
   const channelLink = escapeXml(link);
   const channelLanguage = escapeXml(language);
-  
+  const hasLink = link && link.trim() !== '';
+
   let rssItems = '';
-  
+
   if (Array.isArray(items)) {
     rssItems = items.map(item => {
       const itemTitle = escapeXml(item.title || '');
@@ -78,44 +80,48 @@ export function toRSS(items, options = {}) {
       const guidValue = item.id || item.link || '';
       const itemGuid = escapeXml(guidValue);
       const isPermaLink = !!item.link && guidValue === item.link;
-      
+
       let itemXml = `    <item>
       <title>${itemTitle}</title>
       <description>${itemDescription}</description>
       <link>${itemLink}</link>
       <pubDate>${itemPubDate}</pubDate>
       <guid isPermaLink="${isPermaLink ? 'true' : 'false'}">${itemGuid}</guid>`;
-      
+
       if (itemAuthor) {
         itemXml += `\n      <author>${itemAuthor}</author>`;
       }
-      
+
       if (item.feed) {
         itemXml += `\n      <category>${escapeXml(item.feed)}</category>`;
       }
-      
+
       itemXml += '\n    </item>';
       return itemXml;
     }).join('\n');
   }
-  
-  // Construct atom:link self reference URL, handling trailing slashes
-  const baseUrl = link.endsWith('/') ? link.slice(0, -1) : link;
-  const selfLink = escapeXml(`${baseUrl}/api/rss`);
-  
+
+  // Construct channel link and atom:link only if baseUrl is provided
+  let channelLinkElement = '';
+  let atomLinkElement = '';
+  if (hasLink) {
+    channelLinkElement = `\n    <link>${channelLink}</link>`;
+    const baseUrl = link.endsWith('/') ? link.slice(0, -1) : link;
+    const selfLink = escapeXml(`${baseUrl}/api/rss`);
+    atomLinkElement = `\n    <atom:link href="${selfLink}" rel="self" type="application/rss+xml" />`;
+  }
+
   const rss = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>${channelTitle}</title>
-    <description>${channelDescription}</description>
-    <link>${channelLink}</link>
+    <description>${channelDescription}</description>${channelLinkElement}
     <language>${channelLanguage}</language>
-    <lastBuildDate>${formatRFC822Date(Date.now())}</lastBuildDate>
-    <atom:link href="${selfLink}" rel="self" type="application/rss+xml" />
+    <lastBuildDate>${formatRFC822Date(Date.now())}</lastBuildDate>${atomLinkElement}
 ${rssItems}
   </channel>
 </rss>`;
-  
+
   return rss;
 }
 

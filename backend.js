@@ -87,31 +87,39 @@ class Server {
     }
     const results = [];
     const errors = [];
+    let timedOut = false;
 
     // Cap total aggregation time
     const aggregationTimeout = (this.config.aggregationTimeout || 30) * 1000;
     const fetchPromise = Promise.allSettled(this.config.feeds[query.feeds].map(f => {
       return new Promise(async (resolve, reject) => {
-        const t = setTimeout(() => {
-          const msg = `RSS load timeout for ${f.feed}`;
-          console.log(msg);
-          errors.push({ feed: f.name || f.feed, message: 'Request timeout' });
+        let timeoutHandle = setTimeout(() => {
+          if (!timedOut) {
+            const msg = `RSS load timeout for ${f.feed}`;
+            console.log(msg);
+            errors.push({ feed: f.name || f.feed, message: 'Request timeout' });
+          }
           reject();
         }, this.config.timeout || 10000);
         const fetchStart = Date.now();
         try {
           const d = await rssParser.parse(f.feed);
-          clearTimeout(t);
-          if(d.items) results.push(...d.items.map(i => Object.assign(i, { feed: f.name ?? this.generateTitle(d), type: f.type ?? 'news' })));
+          clearTimeout(timeoutHandle);
+          if (!timedOut && d.items) {
+            results.push(...d.items.map(i => Object.assign(i, { feed: f.name ?? this.generateTitle(d), type: f.type ?? 'news' })));
+          }
           this._metrics[f.feed] = Object.assign(this._metrics[f.feed] || {}, {
             lastFetchMs: Date.now() - fetchStart,
             lastSuccess: Date.now(),
             failureCount: (this._metrics[f.feed]?.failureCount) || 0
           });
         } catch(e) {
-          console.log(`Failed to parse ${f.feed}`, e.errno);
-          console.log(e);
-          errors.push({ feed: f.name || f.feed, message: e.message || 'Parse error' });
+          clearTimeout(timeoutHandle);
+          if (!timedOut) {
+            console.log(`Failed to parse ${f.feed}`, e.errno);
+            console.log(e);
+            errors.push({ feed: f.name || f.feed, message: e.message || 'Parse error' });
+          }
           this._metrics[f.feed] = Object.assign(this._metrics[f.feed] || {}, {
             lastFetchMs: Date.now() - fetchStart,
             lastFailure: Date.now(),
@@ -123,8 +131,10 @@ class Server {
     }));
 
     // Race against aggregation timeout
+    let aggregationTimeoutHandle;
     const timeoutPromise = new Promise((resolve) => {
-      setTimeout(() => {
+      aggregationTimeoutHandle = setTimeout(() => {
+        timedOut = true;
         errors.push({ feed: 'aggregation', message: `Aggregation timeout after ${this.config.aggregationTimeout || 30}s` });
         resolve();
       }, aggregationTimeout);
@@ -132,13 +142,19 @@ class Server {
 
     await Promise.race([fetchPromise, timeoutPromise]);
 
-    const items = results
+    // Clear aggregation timeout if fetch finished first
+    if (aggregationTimeoutHandle) {
+      clearTimeout(aggregationTimeoutHandle);
+    }
+
+    // Clone results and errors to prevent post-response mutations
+    const items = [...results]
       .sort((a, b) => {
         if(a.created < b.created) return 1;
         if(a.created > b.created) return -1;
         return 0;
       });
-    const data = { items, errors };
+    const data = { items, errors: [...errors] };
     this._cache[cacheKey] = { time: Date.now(), data }
     return this._applyFilters(data, query)
   }
@@ -167,7 +183,7 @@ class Server {
     const fileExt = resolvedPath.slice(resolvedPath.lastIndexOf('.')+1);
     this.sendResponse(res, { contentType: this.extToMime(fileExt), data: await fs.readFile(resolvedPath) });
   }
-  sendResponse(res, { statusCode=200, contentType='application/json', data, headers={} }) {
+  sendResponse(res, { statusCode=200, contentType='application/json', data, headers={}, serializedBody=null }) {
     const baseHeaders = {
       'Content-Type': contentType,
       'X-Content-Type-Options': 'nosniff',
@@ -175,10 +191,11 @@ class Server {
       ...headers
     };
     res.writeHead(statusCode, baseHeaders);
-    res.end(contentType === 'application/json' ? JSON.stringify(data) : data, 'utf-8');
+    const body = serializedBody !== null ? serializedBody : (contentType === 'application/json' ? JSON.stringify(data) : data);
+    res.end(body, 'utf-8');
   }
   sendResponseWithETag(req, res, { statusCode=200, contentType='application/json', data }) {
-    // Generate ETag from response body
+    // Serialize body once for both ETag and response
     const body = contentType === 'application/json' ? JSON.stringify(data) : data;
     const etag = '"' + crypto.createHash('md5').update(body).digest('hex').substring(0, 16) + '"';
 
@@ -194,12 +211,13 @@ class Server {
       return;
     }
 
-    // Send response with ETag
+    // Send response with ETag using pre-serialized body
     this.sendResponse(res, {
       statusCode,
       contentType,
       data,
-      headers: { 'ETag': etag }
+      headers: { 'ETag': etag },
+      serializedBody: body
     });
   }
   extToMime(ext) {
