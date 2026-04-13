@@ -1,5 +1,6 @@
 import fs from 'fs/promises';
 import http from 'http';
+import path from 'path';
 import rssParser from './rss-parser.js';
 import jsonToRss from './json-to-rss.js';
 
@@ -159,8 +160,13 @@ class Server {
   async serveStatic(req, res) {
     const [url] = req.url.split('?');
     const filePath = url === '/' ? '/index.html' : url;
-    const fileExt = filePath.slice(filePath.lastIndexOf('.')+1);
-    this.sendResponse(res, { contentType: this.extToMime(fileExt), data: await fs.readFile(`./public${filePath}`) });
+    const publicDir = path.resolve('./public');
+    const resolvedPath = path.resolve(publicDir, filePath.replace(/^\//, ''));
+    if (!resolvedPath.startsWith(publicDir + path.sep)) {
+      return this.sendResponse(res, { statusCode: 404, data: { message: 'Not found' } });
+    }
+    const fileExt = resolvedPath.slice(resolvedPath.lastIndexOf('.')+1);
+    this.sendResponse(res, { contentType: this.extToMime(fileExt), data: await fs.readFile(resolvedPath) });
   }
   sendResponse(res, { statusCode=200, contentType='application/json', data }) {
     res.writeHead(statusCode, { 'Content-Type': contentType });
