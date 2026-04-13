@@ -8,6 +8,7 @@ import jsonToRss from './json-to-rss.js';
 class Server {
   constructor() {
     this._cache = {};
+    this._metrics = {};
     this.init().catch(console.log);
   }
   async init() {
@@ -29,7 +30,7 @@ class Server {
   parseQuery(req) {
     const url = new URL(req.url, 'http://localhost');
     const feeds = url.searchParams.get('feeds');
-    const query = { feeds: 'default' };
+    const query = { feeds: 'default', limit: url.searchParams.get('limit'), since: url.searchParams.get('since') };
 
     if(feeds && this.config.feeds[feeds]) {
       query.feeds = feeds;
@@ -38,8 +39,14 @@ class Server {
   }
   async handleRequest(req, res) {
     const query = this.parseQuery(req);
+    if(req.method === 'GET' && req.url === '/health') {
+      return this.sendResponse(res, { data: { status: 'ok', uptime: process.uptime() } });
+    }
     if(req.method === 'GET' && req.url.startsWith('/api/config')) {
       return this.sendResponse(res, { data: this.config });
+    }
+    if(req.method === 'GET' && req.url.startsWith('/api/metrics')) {
+      return this.sendResponse(res, { data: this._metrics });
     }
     if(req.method === 'GET' && req.url.startsWith('/api/news')) {
       const data = await this.getRSS(query);
@@ -76,7 +83,7 @@ class Server {
     const cached = this._cache[cacheKey]
     const maxAge = (this.config.fetchInterval || 5) * 60 * 1000
     if (cached && (Date.now() - cached.time) < maxAge) {
-      return cached.data
+      return this._applyFilters(cached.data, query)
     }
     const results = [];
     const errors = [];
@@ -91,14 +98,25 @@ class Server {
           errors.push({ feed: f.name || f.feed, message: 'Request timeout' });
           reject();
         }, this.config.timeout || 10000);
+        const fetchStart = Date.now();
         try {
           const d = await rssParser.parse(f.feed);
           clearTimeout(t);
           if(d.items) results.push(...d.items.map(i => Object.assign(i, { feed: f.name ?? this.generateTitle(d), type: f.type ?? 'news' })));
+          this._metrics[f.feed] = Object.assign(this._metrics[f.feed] || {}, {
+            lastFetchMs: Date.now() - fetchStart,
+            lastSuccess: Date.now(),
+            failureCount: (this._metrics[f.feed]?.failureCount) || 0
+          });
         } catch(e) {
           console.log(`Failed to parse ${f.feed}`, e.errno);
           console.log(e);
           errors.push({ feed: f.name || f.feed, message: e.message || 'Parse error' });
+          this._metrics[f.feed] = Object.assign(this._metrics[f.feed] || {}, {
+            lastFetchMs: Date.now() - fetchStart,
+            lastFailure: Date.now(),
+            failureCount: ((this._metrics[f.feed]?.failureCount) || 0) + 1
+          });
         }
         resolve();
       });
@@ -119,11 +137,21 @@ class Server {
         if(a.created < b.created) return 1;
         if(a.created > b.created) return -1;
         return 0;
-      })
-      .slice(0, 100);
+      });
     const data = { items, errors };
     this._cache[cacheKey] = { time: Date.now(), data }
-    return data
+    return this._applyFilters(data, query)
+  }
+  _applyFilters(data, query) {
+    const parsedLimit = parseInt(query.limit);
+    const limit = (Number.isInteger(parsedLimit) && parsedLimit > 0) ? Math.min(parsedLimit, 100) : 100;
+    const parsedSince = parseInt(query.since);
+    const since = (Number.isInteger(parsedSince) && parsedSince > 0) ? parsedSince : null;
+    let filteredItems = data.items;
+    if (since) {
+      filteredItems = filteredItems.filter(i => i.created > since);
+    }
+    return { items: filteredItems.slice(0, limit), errors: data.errors };
   }
   generateTitle(data) {
     return data.title.split(/[^A-Za-z0-9\s]/)[0].trim();
