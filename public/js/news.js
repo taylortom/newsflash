@@ -40,7 +40,7 @@ class Feed extends HTMLElement {
     this.shadowRoot.getElementById('items')?.remove();
 
     const items = this.createEl({ type: 'div', attributes: { id: 'items', class: 'items' } });
-    data.items.forEach(({ title, description, feed, created, link, type }) => {
+    data.items.forEach(({ title, description, feed, published, created, link, type }) => {
       let extraHtml = '';
       if(feed === 'Hacker News') {
         extraHtml = `<a href="${description.match(`href="(.+)"`)[1]}" target="_blank">Comments</a>`;
@@ -53,7 +53,7 @@ class Feed extends HTMLElement {
           <div class="metadata">
             <span class="icon fa-solid fa-${this.typeToIcon(type)}"></span>
             <div class="feed">${feed}</div>
-            <div class="date">${this.formatDate(created)}</div>
+            <div class="date">${this.formatDate(published ?? created)}</div>
             ${extraHtml}
           </div>
         `
