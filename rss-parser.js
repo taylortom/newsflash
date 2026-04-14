@@ -11,22 +11,39 @@ import http from 'http';
  * @param {string} url - The feed URL
  * @returns {Promise<string>} - The feed XML content
  */
-async function fetchFeed(url) {
+async function fetchFeed(url, maxRedirects = 5) {
   return new Promise((resolve, reject) => {
     const client = url.startsWith('https') ? https : http;
-    
-    const req = client.get(url, (res) => {
+
+    const options = {
+      headers: {
+        'User-Agent': 'Newsflash/1.0 RSS Reader',
+        'Accept': 'application/rss+xml, application/atom+xml, application/xml, text/xml, */*',
+      },
+    };
+
+    const req = client.get(url, options, (res) => {
+      if ([301, 302, 303, 307, 308].includes(res.statusCode) && res.headers.location) {
+        if (maxRedirects <= 0) {
+          reject(new Error('Too many redirects'));
+          return;
+        }
+        const redirectUrl = new URL(res.headers.location, url).href;
+        fetchFeed(redirectUrl, maxRedirects - 1).then(resolve, reject);
+        return;
+      }
+
       if (res.statusCode !== 200) {
         reject(new Error(`Failed to fetch feed: ${res.statusCode}`));
         return;
       }
-      
+
       let data = '';
       res.setEncoding('utf8');
       res.on('data', (chunk) => { data += chunk; });
       res.on('end', () => resolve(data));
     }).on('error', reject);
-    
+
     // Set timeout
     req.setTimeout(10000, () => {
       req.destroy();
