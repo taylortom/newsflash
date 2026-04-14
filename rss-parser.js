@@ -108,9 +108,9 @@ function decodeEntities(text) {
  * @returns {number} - The timestamp
  */
 function parseDate(dateStr) {
-  if (!dateStr) return Date.now();
+  if (!dateStr) return null;
   const timestamp = Date.parse(dateStr);
-  return isNaN(timestamp) ? Date.now() : timestamp;
+  return isNaN(timestamp) ? null : timestamp;
 }
 
 /**
@@ -126,14 +126,26 @@ function parseRSSItem(itemXml) {
   const creator = extractTag(itemXml, 'dc:creator') || extractTag(itemXml, 'author');
   const guid = extractTag(itemXml, 'guid');
   const content = extractTag(itemXml, 'content:encoded') || extractTag(itemXml, 'content');
-  
+
+  const published = parseDate(pubDate);
+  if (published === null) {
+    const dateTags = {
+      pubDate: extractTag(itemXml, 'pubDate'),
+      published: extractTag(itemXml, 'published'),
+      date: extractTag(itemXml, 'date'),
+      'dc:date': extractTag(itemXml, 'dc:date'),
+      updated: extractTag(itemXml, 'updated'),
+    };
+    console.warn(`RSS item missing published date: "${title || guid || link}"`, dateTags);
+  }
+
   return {
     id: guid || link,
     title: title || '',
     description: description || '',
     link: link || '',
     author: creator || '',
-    published: parseDate(pubDate),
+    published,
     created: Date.now(),
     category: [],
     content: content || '',
@@ -163,13 +175,25 @@ function parseAtomEntry(entryXml) {
     author = extractTag(authorMatch[1], 'name') || '';
   }
   
+  const publishedDate = parseDate(published);
+  if (publishedDate === null) {
+    const dateTags = {
+      published,
+      updated,
+      issued: extractTag(entryXml, 'issued'),
+      created: extractTag(entryXml, 'created'),
+      'dc:date': extractTag(entryXml, 'dc:date'),
+    };
+    console.warn(`Atom entry missing published date: "${title || id || linkHref}"`, dateTags);
+  }
+
   return {
     id: id || linkHref,
     title: title || '',
     description: summary || content || '',
     link: linkHref || '',
     author: author,
-    published: parseDate(published),
+    published: publishedDate,
     created: parseDate(updated || published),
     category: [],
     content: content || '',

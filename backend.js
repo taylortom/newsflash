@@ -150,8 +150,10 @@ class Server {
     // Clone results and errors to prevent post-response mutations
     const items = [...results]
       .sort((a, b) => {
-        if(a.created < b.created) return 1;
-        if(a.created > b.created) return -1;
+        const dateA = a.published ?? a.created;
+        const dateB = b.published ?? b.created;
+        if(dateA < dateB) return 1;
+        if(dateA > dateB) return -1;
         return 0;
       });
     const data = { items, errors: [...errors] };
@@ -165,7 +167,7 @@ class Server {
     const since = (Number.isInteger(parsedSince) && parsedSince > 0) ? parsedSince : null;
     let filteredItems = data.items;
     if (since) {
-      filteredItems = filteredItems.filter(i => i.created > since);
+      filteredItems = filteredItems.filter(i => (i.published ?? i.created) > since);
     }
     return { items: filteredItems.slice(0, limit), errors: data.errors };
   }
