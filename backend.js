@@ -48,6 +48,9 @@ class Server {
     if(req.method === 'GET' && req.url.startsWith('/api/metrics')) {
       return this.sendResponse(res, { data: this._metrics });
     }
+    if(req.method === 'GET' && req.url.startsWith('/api/settings')) {
+      return this.sendResponse(res, { data: this.getSettings() });
+    }
     if(req.method === 'GET' && req.url.startsWith('/api/news')) {
       const data = await this.getRSS(query);
       return this.sendResponseWithETag(req, res, { data });
@@ -173,6 +176,26 @@ class Server {
   }
   generateTitle(data) {
     return data.title.split(/[^A-Za-z0-9\s]/)[0].trim();
+  }
+  getSettings() {
+    const allFeeds = Object.values(this.config.feeds).flat();
+    const categories = [...new Set(allFeeds.map(f => f.type).filter(Boolean))].sort();
+    const feeds = allFeeds
+      .reduce((acc, f) => {
+        const name = f.name || f.feed;
+        if (!acc.find(x => x.name === name)) {
+          acc.push({ name, type: f.type || 'news' });
+        }
+        return acc;
+      }, [])
+      .sort((a, b) => a.name.localeCompare(b.name));
+    const themes = [
+      { value: '', label: 'Default' },
+      { value: 'darkeighties', label: 'Dark Eighties' },
+      { value: 'darkgrey', label: 'Dark Grey' },
+      { value: 'homeassistant', label: 'Home Assistant' }
+    ];
+    return { categories, feeds, themes };
   }
   async serveStatic(req, res) {
     const [url] = req.url.split('?');

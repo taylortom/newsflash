@@ -103,6 +103,9 @@ header .inner,
   margin: 0 auto;
   padding: 1rem;
 }
+header .inner {
+  position: relative;
+}
 .items { 
   padding: 0;
   padding-top: 8rem;
@@ -239,4 +242,116 @@ header .inner,
 
 .display-none {
   display: none !important;
+}
+
+/**
+ * Settings button
+ */
+.settings-btn {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--header-text-colour);
+  font-size: 1.4rem;
+  cursor: pointer;
+  padding: 0.4rem 0.5rem;
+  line-height: 1;
+  opacity: 0.8;
+}
+.settings-btn:hover {
+  opacity: 1;
+}
+
+/**
+ * Settings overlay and panel
+ */
+.settings-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 100;
+}
+.settings-panel {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 300px;
+  background: var(--background-colour);
+  color: var(--text-colour);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.settings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: var(--header-background-colour);
+  color: var(--header-text-colour);
+  font-size: 1.1rem;
+  font-weight: 700;
+  border-bottom: 1px solid var(--border-colour);
+}
+.settings-close {
+  background: none;
+  border: none;
+  color: var(--header-text-colour);
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+  line-height: 1;
+  opacity: 0.8;
+}
+.settings-close:hover {
+  opacity: 1;
+}
+.settings-body {
+  padding: 0 1rem 1rem;
+  flex: 1;
+}
+.settings-section {
+  margin-top: 1.25rem;
+}
+.settings-section-title {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--feed-text-colour);
+  margin: 0 0 0.6rem;
+  font-weight: 700;
+}
+.settings-select {
+  width: 100%;
+  padding: 0.45rem 0.5rem;
+  background: var(--background-colour);
+  color: var(--text-colour);
+  border: 1px solid var(--border-colour);
+  font-family: inherit;
+  font-size: 0.9rem;
+}
+.settings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+.settings-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  user-select: none;
+}
+.settings-item input[type="checkbox"] {
+  cursor: pointer;
+  margin: 0;
+}
+
+@media only screen and (max-device-width: 480px) {
+  .settings-panel { width: 100%; }
 }
