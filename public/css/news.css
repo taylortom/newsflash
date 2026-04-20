@@ -74,6 +74,8 @@
   font-size: 100%;
   background: var(--background-colour);
   color: var(--text-colour);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 .page header {
   position: fixed;
