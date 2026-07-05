@@ -103,6 +103,37 @@ function decodeEntities(text) {
 }
 
 /**
+ * Zero-width characters used by Sanity.io Content Source Maps (stega) to embed
+ * click-to-edit pointers inside string fields. Some feeds (e.g. Stack Overflow's
+ * blog, which runs on Sanity) leak these into their RSS output, polluting titles
+ * and summaries with invisible metadata. This strips them out.
+ * Chars: U+200B (ZWSP), U+200C (ZWNJ), U+200D (ZWJ), U+FEFF (ZWNBSP/BOM).
+ */
+const STEGA_REGEX = /[​‌‍﻿]/g;
+
+/**
+ * Recursively strip zero-width stega characters from all string values in a value.
+ * Handles strings, arrays and plain objects; other types are returned unchanged.
+ * @param {*} value - The value to sanitise
+ * @returns {*} - The sanitised value
+ */
+function stripStega(value) {
+  if (typeof value === 'string') {
+    return value.replace(STEGA_REGEX, '');
+  }
+  if (Array.isArray(value)) {
+    return value.map(stripStega);
+  }
+  if (value && typeof value === 'object') {
+    for (const key of Object.keys(value)) {
+      value[key] = stripStega(value[key]);
+    }
+    return value;
+  }
+  return value;
+}
+
+/**
  * Parse date string to timestamp
  * @param {string} dateStr - The date string
  * @returns {number} - The timestamp
@@ -226,15 +257,15 @@ export async function parse(url) {
     // Extract entries
     const entryMatches = feedContent.match(/<entry>([\s\S]*?)<\/entry>/gi) || [];
     const items = entryMatches.map(parseAtomEntry);
-    
-    return {
+
+    return stripStega({
       title: title || '',
       description: subtitle || '',
       link: linkHref || '',
       image: '',
       category: [],
       items: items
-    };
+    });
   } else {
     // Parse RSS feed
     const channelMatch = xml.match(/<channel>([\s\S]*)<\/channel>/i);
@@ -250,15 +281,15 @@ export async function parse(url) {
     // Extract items
     const itemMatches = channelContent.match(/<item>([\s\S]*?)<\/item>/gi) || [];
     const items = itemMatches.map(parseRSSItem);
-    
-    return {
+
+    return stripStega({
       title: title || '',
       description: description || '',
       link: link || '',
       image: imageUrl || '',
       category: [],
       items: items
-    };
+    });
   }
 }
 
